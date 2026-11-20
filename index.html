@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#E8ECF2">
+<meta name="format-detection" content="telephone=no">
+<title>TaxGo 웹앱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Chiron+GoRound+TC:wght@200..900&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+/*
+ * TaxGo: 스타일
+ * 색과 글꼴은 맨 위 :root 변수만 바꾸면 전체에 반영됩니다.
+ */
+:root {
+  /* 색 */
+  --ink: #101B36;
+  --navy: #22305A;
+  --ink-soft: #46526B;
+  --floor: #F5F7FB;
+  --paper: #FFFFFF;
+  --tint: #EDF2FA;
+  --line: #DCE3EF;
+  --edge: #7C879C;
+  --sign: #FFC72C;
+  --sign-hover: #FFD45C;
+  --sign-soft: #FFF2C8;
+  --canvas-start: #F4F7FC;
+  --canvas-end: #E5ECF8;
+  --schedule-start: #EFF3FA;
+  --schedule-end: #D6E1F4;
+  --canvas-gradient: linear-gradient(155deg, var(--canvas-start), var(--canvas-end));
+  --schedule-gradient: linear-gradient(135deg, var(--schedule-start), var(--schedule-end));
+  --refund-gradient: linear-gradient(110deg, var(--sign-hover), var(--sign));
+  --go: #0B6B3F;
+  --go-bg: #DDF3E6;
+  --risk: #B0370B;
+  --risk-bg: #FDE7DA;
+  --risk-stripe: #E08A62;
+
+  /* 간격, 모서리, 그림자 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --section-gap: 36px;
+  --gutter: var(--space-4);
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --radius-feature: 24px;
+  --radius-pill: 999px;
+  --shadow-card: 0 2px 5px rgba(16, 27, 54, .04), 0 8px 24px rgba(16, 27, 54, .06);
+  --shadow-action: 0 3px 9px rgba(158, 106, 0, .14);
+  --shadow-raised: 0 12px 36px rgba(16, 27, 54, .13);
+  --touch: 44px;
+  --control: 48px;
+  --tab-height: 72px;
+  --layout-width: 760px;
+  --sheet-width: 480px;
+
+  /* 글꼴: 제목은 간판 글씨(Chiron GoRound TC), 본문은 기기 기본 고딕 */
+  --font-display: "Chiron GoRound TC", "Apple SD Gothic Neo", "Noto Sans KR", "Noto Sans CJK KR", "Malgun Gothic", sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Noto Sans CJK KR", "Malgun Gothic", system-ui, sans-serif;
+  --font-ja: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Noto Sans CJK JP", Meiryo, sans-serif;
+
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--tint);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul, ol, dl, dd { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+
+.ic { flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.disp { font-family: var(--font-display); font-weight: 800; font-synthesis: none; }
+.num { font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- 앱 틀: 위 바, 스크롤되는 본문, 아래 탭 ---------- */
+.app { position: relative; height: 100%; max-width: var(--layout-width); margin: 0 auto; display: flex; flex-direction: column; background: var(--canvas-gradient); overflow: hidden; }
+
+.top { flex: none; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--gutter); background: var(--paper); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.brand-mark { flex: none; width: 36px; height: 36px; border-radius: var(--radius-control); background: var(--sign); display: grid; place-items: center; font-family: var(--font-ja); font-weight: 700; font-size: 18px; line-height: 1; }
+.brand-name { font-size: 20px; line-height: 1; white-space: nowrap; }
+.tripchip { flex: none; min-height: var(--touch); padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--radius-control); background: var(--ink); color: var(--sign); font-size: 14px; font-weight: 700; white-space: nowrap; }
+
+.previewbar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 8px 0 16px; background: var(--sign-soft); font-size: 13px; font-weight: 700; }
+
+.view { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: var(--space-4) var(--gutter) var(--space-8); display: flex; flex-direction: column; gap: var(--section-gap); }
+.view:focus { outline: none; }
+
+.tabs { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--paper); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.tab { min-height: var(--tab-height); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+.tab[aria-current="page"] { color: var(--navy); font-weight: 800; }
+.tab .ic { box-sizing: content-box; padding: 4px 12px; border-radius: var(--radius-pill); }
+.tab[aria-current="page"] .ic { background: var(--sign-soft); }
+.tabs .tab-departure { color: var(--ink); font-weight: 800; }
+.tabs .tab-departure .ic { padding: var(--space-3); background: var(--sign); color: var(--ink); box-shadow: var(--shadow-action); }
+.tabs .tab-departure[aria-current="page"] .ic { background: var(--ink); color: var(--sign); }
+.tab:focus-visible { outline-offset: -3px; }
+
+.toast { position: absolute; left: var(--gutter); right: var(--gutter); bottom: calc(var(--tab-height) + var(--space-4) + env(safe-area-inset-bottom, 0px)); z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--control); padding: 6px 8px 6px 14px; border-radius: var(--radius-control); background: var(--paper); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-raised); font-size: 14px; }
+.toast:empty { display: none; }
+.toast .btn-text { color: var(--navy); flex: none; }
+
+/* ---------- 공통 ---------- */
+.page-head { display: flex; flex-direction: column; gap: 6px; }
+.page-head-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.page-title { font-size: 28px; line-height: 1.2; }
+.lede { color: var(--ink-soft); font-size: 15px; text-wrap: pretty; }
+
+.sec { display: flex; flex-direction: column; gap: var(--space-4); }
+.sec:has(> .seg-sub) { gap: var(--space-6); }
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--touch); }
+.sec-title { font-size: 21px; line-height: 1.25; }
+.sec-side { color: var(--ink-soft); font-size: 14px; font-weight: 700; }
+.sec-head.is-end { justify-content: flex-end; min-height: 0; }
+.link { display: inline-flex; align-items: center; min-height: var(--touch); font-size: 14px; font-weight: 700; text-underline-offset: 3px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: var(--control); padding: 0 16px; border: 0; border-radius: var(--radius-control); font-size: 16px; font-weight: 700; text-align: center; text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn-sign { background: var(--sign); color: var(--ink); box-shadow: var(--shadow-action); }
+.btn-line { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge); }
+.btn-line[aria-pressed="true"] { background: var(--tint); color: var(--navy); }
+.btn-block { width: 100%; }
+.btn-sm { min-height: var(--touch); padding: 0 12px; font-size: 14px; }
+.btn-text { display: inline-flex; align-items: center; gap: 6px; min-height: var(--touch); padding: 0 6px; border: 0; border-radius: var(--radius-control); background: transparent; font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) {
+  .btn-sign:hover { background: var(--sign-hover); }
+  .btn-line:hover, .arrowbtn:hover { background: var(--tint); }
+  .btn-line[aria-pressed="true"]:hover { background: var(--line); }
+  .btn-text:hover, .link:hover { text-decoration-thickness: 2px; }
+}
+
+/* 가이드 다음 단계 화살표 */
+.guide-nav { display: flex; justify-content: flex-end; }
+.arrowbtn { flex: none; width: 64px; min-height: var(--control); display: grid; place-items: center; border: 0; border-radius: var(--radius-control); background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge); }
+.arrowbtn:active { transform: translateX(2px); }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 800; line-height: 1.4; white-space: nowrap; }
+.chip-sign { background: var(--sign); color: var(--ink); }
+.chip-ghost { box-shadow: inset 0 0 0 1.5px currentColor; font-weight: 700; }
+.chip-risk { background: var(--risk-bg); color: var(--risk); }
+.chip-ok { background: var(--go-bg); color: var(--go); }
+.chip-dark { background: var(--tint); color: var(--navy); font-weight: 700; }
+
+.panel { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-control); background: var(--paper); }
+.panel > .bar, .panel > .legend, .panel > .money-row, .panel > .note, .panel > .times, .panel > .seg, .panel > .why { align-self: stretch; }
+
+.rows { border-radius: var(--radius-control); background: var(--paper); }
+.row { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) 14px; }
+.row + .row { border-top: 1px solid var(--line); }
+.row-when {
+  flex: none;
+  min-width: 86px;
+  padding: var(--space-2);
+  border: 1px solid var(--schedule-end);
+  border-radius: var(--radius-control);
+  background: var(--schedule-gradient);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.row-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.row-title { font-size: 15px; font-weight: 700; }
+.row-desc { color: var(--ink-soft); font-size: 13px; }
+.row.is-past { color: var(--ink-soft); }
+.row.is-past .row-title { font-weight: 600; }
+
+.note { display: flex; align-items: flex-start; gap: 10px; padding: var(--space-3) 14px; border-radius: var(--radius-control); font-size: 14px; }
+.note-title { display: block; font-weight: 800; }
+.note-risk { background: var(--risk-bg); }
+.note-risk .note-title, .note-risk .ic { color: var(--risk); }
+.note-sign { background: var(--sign-soft); }
+
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--space-1); padding: var(--space-1); border-radius: var(--radius-control); background: var(--tint); }
+.seg button { min-height: var(--touch); padding: 0 4px; border: 0; border-radius: var(--radius-control); background: transparent; font-size: 14px; font-weight: 700; }
+
+
+/* ---------- 홈 ---------- */
+.sample { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 2px 6px 2px 14px; border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius-control); font-size: 13px; }
+.sample .btn-text { flex: none; white-space: nowrap; }
+
+/* 주요 안내 카드 */
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-feature);
+  background: linear-gradient(135deg, var(--tint), var(--paper) 72%);
+  box-shadow: var(--shadow-card);
+}
+.board-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.dday { font-size: 34px; line-height: 1; color: var(--navy); }
+.board-main { display: flex; align-items: flex-start; gap: 14px; }
+.picto { flex: none; width: 52px; height: 52px; border-radius: var(--radius-control); background: var(--sign); color: var(--ink); display: grid; place-items: center; }
+.board-copy { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.board-title { font-size: 28px; line-height: 1.22; text-wrap: balance; }
+.board-body { color: var(--ink-soft); font-size: 15px; text-wrap: pretty; }
+.board-where { display: flex; align-items: flex-start; gap: 6px; font-size: 15px; font-weight: 700; color: var(--navy); }
+.board-where .ic { margin-top: 2px; }
+.board-trip { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; }
+.board-trip b { display: block; font-size: 15px; }
+.board-trip span { color: var(--ink-soft); }
+.board .btn-text { color: var(--navy); }
+@media (prefers-reduced-motion: no-preference) {
+  .board.is-flip { animation: board-in .22s ease-out; }
+}
+@keyframes board-in {
+  from { transform: translateY(4px); opacity: .65; }
+  to { transform: none; opacity: 1; }
+}
+
+.money-row { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--space-1) 12px; }
+/* 금액은 본문 글꼴로: 간판 글꼴은 쉼표가 마침표처럼 보여서 4,500이 4.500으로 읽힐 수 있음 */
+.money { font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.money-note { color: var(--ink-soft); font-size: 13px; }
+.bar { display: flex; height: 12px; border-radius: 3px; overflow: hidden; background: var(--line); }
+.bar-go { background: var(--refund-gradient); }
+.bar-risk { background: repeating-linear-gradient(135deg, var(--risk) 0 4px, var(--risk-stripe) 4px 8px); }
+.legend { display: grid; gap: 6px; font-size: 14px; }
+.legend li { display: flex; align-items: center; gap: var(--space-2); }
+.legend b { margin-left: auto; font-variant-numeric: tabular-nums; }
+.key { flex: none; width: 12px; height: 12px; border-radius: 2px; }
+.key-go { background: var(--refund-gradient); }
+.key-risk { background: repeating-linear-gradient(135deg, var(--risk) 0 3px, var(--risk-stripe) 3px 6px); }
+
+/* ---------- 영수증 ---------- */
+.slips { display: flex; flex-direction: column; gap: var(--space-4); }
+.slip-wrap { filter: drop-shadow(0 5px 8px rgba(16, 27, 54, .09)); }
+.slip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: var(--paper);
+  -webkit-mask: linear-gradient(#000, #000) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from -45deg at bottom, transparent, #000 1deg 89deg, transparent 90deg) bottom / 14px 8px repeat-x;
+  mask: linear-gradient(#000, #000) top / 100% calc(100% - 8px) no-repeat, conic-gradient(from -45deg at bottom, transparent, #000 1deg 89deg, transparent 90deg) bottom / 14px 8px repeat-x;
+}
+.slip-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.slip-store { font-size: 17px; font-weight: 800; line-height: 1.3; }
+.slip-date { color: var(--ink-soft); font-size: 13px; }
+.stamp { flex: none; margin-top: 2px; padding: 5px 8px 4px; border-radius: var(--radius-pill); font-size: 13px; line-height: 1.4; }
+.stamp.is-ok { background: var(--go-bg); color: var(--go); }
+.stamp.is-no { background: var(--risk-bg); color: var(--risk); }
+.slip-lines { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.slip-lines div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); font-size: 14px; }
+.slip-lines dt { color: var(--ink-soft); }
+.slip-lines dd { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.slip-lines .is-total dt { color: var(--ink); font-weight: 700; }
+.slip-lines .is-total dd { font-size: 24px; font-weight: 800; line-height: 1.1; letter-spacing: -.02em; }
+.slip-lines .is-void dd { color: var(--risk); text-decoration: line-through; }
+.slip-msg { padding: 10px 12px; border-radius: var(--radius-control); background: var(--risk-bg); font-size: 14px; }
+.slip-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-1) 8px; }
+.slip-tools { display: flex; align-items: center; gap: var(--space-1); margin-left: auto; }
+.slip-count { color: var(--ink-soft); font-size: 13px; font-weight: 700; }
+
+/* 물품별로 입력한 영수증: 먹었거나 쓴 물품에 체크 */
+.items { display: flex; flex-direction: column; gap: 2px; padding-top: 10px; border-top: 1px solid var(--line); }
+.items-head { color: var(--ink-soft); font-size: 13px; font-weight: 700; }
+.item { display: flex; align-items: center; gap: 10px; min-height: var(--touch); padding: var(--space-1) 0; font-size: 14px; cursor: pointer; }
+.item input { -webkit-appearance: none; appearance: none; flex: none; width: 26px; height: 26px; margin: 0; border: 2px solid var(--ink); border-radius: var(--radius-control); background: var(--paper); cursor: pointer; }
+.item input:checked { border-color: var(--risk); background: var(--risk) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center / 16px 16px no-repeat; }
+.item-name { flex: 1; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 2px 8px; }
+.item input:checked ~ .item-name .item-text { color: var(--ink-soft); text-decoration: line-through; }
+.item-price { flex: none; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- 캘린더 ---------- */
+.cal { padding: var(--space-3); border-radius: var(--radius-control); background: var(--paper); display: flex; flex-direction: column; gap: 6px; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.cal-month { font-size: 20px; }
+.iconbtn { flex: none; width: var(--touch); height: var(--touch); display: grid; place-items: center; border: 0; border-radius: var(--radius-control); background: transparent; }
+.iconbtn-action { color: var(--navy); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.iconbtn-action.is-danger { color: var(--risk); }
+.cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.cal-dow span { padding: 2px 0; text-align: center; color: var(--ink-soft); font-size: 13px; font-weight: 700; }
+.day { min-height: 46px; padding: 6px 0 4px; display: flex; flex-direction: column; align-items: center; gap: var(--space-1); border: 0; border-radius: var(--radius-control); background: transparent; font-size: 14px; font-variant-numeric: tabular-nums; }
+.day.is-dep { background: var(--sign); font-weight: 800; }
+.day.is-today .day-num { font-weight: 800; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.marks { display: flex; align-items: center; gap: 3px; height: 11px; }
+.mk { flex: none; display: inline-block; width: 10px; height: 10px; }
+.mk-buy { border-radius: 50%; background: var(--ink); }
+.mk-remind { border-radius: 50%; box-shadow: inset 0 0 0 2px var(--ink); }
+.mk-due { width: 8px; height: 8px; background: var(--risk); transform: rotate(45deg); }
+.mk-dep { width: 12px; height: 12px; border-radius: 2px; background: var(--sign); box-shadow: inset 0 0 0 1px var(--ink); }
+.cal-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) 14px; padding: var(--space-1) 6px 0; color: var(--ink-soft); font-size: 13px; }
+.cal-legend li, .dayinfo-list li { display: flex; align-items: center; gap: 6px; }
+.dayinfo-title { font-size: 16px; font-weight: 800; }
+.dayinfo-list { display: grid; gap: 6px; font-size: 14px; }
+.dayinfo-list li { align-items: baseline; }
+.dayinfo-list .mk { transform-origin: center; position: relative; top: -1px; }
+.dayinfo-list .mk-due { transform: rotate(45deg); }
+
+/* ---------- 출국 ---------- */
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label, .field > .label { font-size: 14px; font-weight: 700; }
+.hint { color: var(--ink-soft); font-weight: 400; }
+.input { display: block; width: 100%; min-height: var(--control); padding: 0 12px; border: 1.5px solid var(--edge); border-radius: var(--radius-control); background: var(--paper); font-size: 16px; -webkit-appearance: none; appearance: none; }
+.input:focus-visible { outline-offset: 0; border-color: var(--ink); }
+select.input { padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23101B36' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+
+.kiosk-sign { display: flex; align-items: center; gap: var(--space-3); }
+.kiosk-ja { font-family: var(--font-ja); font-size: 15px; font-weight: 700; letter-spacing: .04em; color: var(--navy); }
+.kiosk-ko { color: var(--ink-soft); font-size: 13px; }
+.kiosk-where { font-size: 26px; line-height: 1.25; text-wrap: balance; }
+.kiosk-spec { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -6px; }
+/* 휴대폰 판정, RED일 때, 현금 환급: 제목 줄 → 한 줄 답 → 시간·대수 → 덧붙임. 선 하나로만 나눠서 안내판 느낌을 지킴 */
+.infos { border-top: 1px solid var(--line); }
+.info { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px 0; }
+.info + .info { border-top: 1px solid var(--line); }
+.info-head { align-self: stretch; display: flex; align-items: center; gap: var(--space-2); min-height: 26px; color: var(--navy); }
+.info-head .chip { margin-left: auto; }
+.info-label { font-size: 14px; font-weight: 800; line-height: 1.3; }
+.info-main { font-size: 16px; font-weight: 600; line-height: 1.5; text-wrap: pretty; }
+.info-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.info-extra { color: var(--ink-soft); font-size: 13px; text-wrap: pretty; }
+.board-note { margin-top: -4px; color: var(--ink-soft); font-size: 13px; text-wrap: pretty; }
+.board-note b { margin-right: 6px; color: var(--ink); }
+.nb { white-space: nowrap; }
+.result .nb { display: inline; }   /* .result span이 블록이라, 묶음 표시가 줄을 가르지 않게 */
+.board-src { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--touch); color: var(--ink-soft); font-size: 13px; text-underline-offset: 3px; }
+
+/* 공항 도착 목표 → 출발 시각 */
+.times { display: grid; grid-template-columns: auto minmax(44px, 1fr) auto; align-items: end; gap: 10px; }
+.time { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+.time.is-dep { align-items: flex-end; text-align: right; }
+.time-label { color: var(--ink-soft); font-size: 13px; font-weight: 700; line-height: 1.4; }
+.time-num { font-size: 46px; line-height: .9; font-variant-numeric: tabular-nums; }
+.time.is-dep .time-num { font-size: 30px; }
+.time-date { color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
+.time-gap { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); padding-bottom: 34px; font-size: 13px; font-weight: 800; line-height: 1.3; text-align: center; }
+.time-gap i { position: relative; display: block; width: 100%; height: 2px; background: var(--ink); }
+.time-gap i::after { content: ""; position: absolute; right: 0; top: -4px; width: 8px; height: 8px; border-top: 2px solid var(--ink); border-right: 2px solid var(--ink); transform: rotate(45deg); }
+.why { display: grid; gap: var(--space-2); font-size: 14px; }
+.why li { display: grid; grid-template-columns: 60px minmax(0, 1fr); align-items: baseline; gap: var(--space-2); }
+.why-tag { justify-self: start; padding: 2px 7px; border-radius: var(--radius-control); background: var(--floor); font-size: 12px; font-weight: 800; line-height: 1.5; white-space: nowrap; }
+.why-tag.is-add { background: var(--sign); }
+
+.steps { counter-reset: step; border-radius: var(--radius-control); background: var(--paper); }
+.step { counter-increment: step; display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) 14px; }
+.step + .step { border-top: 1px solid var(--line); }
+.step input { -webkit-appearance: none; appearance: none; flex: none; width: 32px; height: 32px; margin: 0; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: var(--radius-control); background: var(--paper); cursor: pointer; }
+.step input::before { content: counter(step); font-size: 14px; font-weight: 800; line-height: 1; }
+.step input:checked { border-color: var(--go); background: var(--go); }
+.step input:checked::before { content: ""; width: 14px; height: 8px; border-left: 3px solid #fff; border-bottom: 3px solid #fff; transform: translateY(-2px) rotate(-45deg); }
+.step label { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-top: 4px; cursor: pointer; }
+.step-title { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-1) 8px; font-weight: 700; }
+.step-desc { color: var(--ink-soft); font-size: 14px; }
+.step input:checked + label .step-name { color: var(--ink-soft); text-decoration: line-through; }
+
+.result { display: flex; align-items: flex-start; gap: var(--space-3); padding: 14px; border-radius: var(--radius-control); font-size: 14px; }
+.result b { display: block; font-size: 17px; }
+.result span { display: block; }
+.result-green { background: var(--go-bg); color: var(--go); }
+.result-red { background: var(--risk-bg); color: var(--risk); }
+
+.signs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.signword { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3); border-radius: var(--radius-control); background: var(--tint); color: var(--navy); }
+.signword-ja { font-family: var(--font-ja); font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--navy); }
+.signword-yomi { font-family: var(--font-ja); font-size: 14px; color: var(--ink-soft); }
+.signword-ko { font-size: 14px; font-weight: 700; }
+.signword-hun { color: var(--ink-soft); font-size: 13px; }
+
+/* ---------- 가이드 ---------- */
+.guide-list { border-radius: var(--radius-control); background: var(--paper); }
+.guide-item { display: flex; gap: var(--space-3); padding: 14px; }
+.guide-item + .guide-item { border-top: 1px solid var(--line); }
+.guide-ic { flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: var(--radius-control); background: var(--floor); }
+.guide-text { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.guide-text h3 { font-size: 16px; font-weight: 800; }
+.guide-text p { color: var(--ink-soft); font-size: 14px; }
+.allow { display: grid; gap: var(--space-2); align-self: stretch; }
+.allow div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; font-size: 14px; }
+.allow dt { color: var(--ink-soft); }
+.allow dd { font-weight: 600; }
+.sources { display: grid; font-size: 13px; }
+.sources a { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--touch); text-underline-offset: 3px; }
+
+/* 면세 QR 만들기 안내판 */
+.qr-title { font-size: 26px; line-height: 1.2; }
+.qr-steps { counter-reset: qr; display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 15px; }
+.qr-steps li { counter-increment: qr; display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: start; gap: 10px; }
+.qr-steps li::before { content: counter(qr); width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--sign); color: var(--ink); font-size: 14px; font-weight: 800; line-height: 1; }
+.qr-steps li > span { padding-top: 2px; }
+.qr-host { margin-top: -6px; color: var(--ink-soft); font-size: 13px; text-align: center; }
+.qr-notes { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 13px; }
+.qr-notes li { position: relative; padding-left: 14px; }
+.qr-notes li::before { content: ""; position: absolute; left: 2px; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-soft); }
+
+/* ---------- 입력 시트 (dialog) ---------- */
+dialog { width: 100%; max-width: var(--sheet-width); max-height: 92%; margin: auto auto 0; padding: 0; border: 0; border-radius: var(--radius-feature) var(--radius-feature) 0 0; background: var(--paper); box-shadow: var(--shadow-raised); color: var(--ink); scroll-padding-bottom: 110px; }
+dialog::backdrop { background: rgba(16, 27, 54, .32); }
+.sheet { display: flex; flex-direction: column; gap: var(--space-4); padding: 14px 16px 20px; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.sheet-title { font-size: 24px; }
+.field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 10px; }
+/* 영수증 시트: 물품을 한 줄씩 (이름, 금액, 삭제) */
+.item-rows { display: grid; gap: var(--space-2); }
+.item-row { display: grid; grid-template-columns: minmax(0, 1fr) 96px 44px; align-items: center; gap: 6px; }
+.item-row .input { padding: 0 10px; }
+.item-row .num { text-align: right; }
+.item-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.item-sum { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.calc { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3) 14px; border-radius: var(--radius-control); background: var(--tint); font-size: 14px; }
+.calc-big { font-size: 24px; font-weight: 800; line-height: 1; margin-left: 6px; letter-spacing: -.02em; }
+.calc-sub { color: var(--ink-soft); }
+.meter { height: 8px; border-radius: 3px; overflow: hidden; background: var(--line); }
+.meter span { display: block; height: 100%; background: var(--ink); }
+.meter.is-ok span { background: var(--go); }
+.form-msg { color: var(--risk); font-size: 14px; font-weight: 700; }
+.form-msg:empty { display: none; }
+.sheet-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 10px; }
+/* 물품이 많아 시트가 길어져도 안내 문구와 저장 버튼은 아래에 붙어 있게 */
+.sheet-end { position: sticky; bottom: 0; display: flex; flex-direction: column; gap: var(--space-2); margin: 0 -16px -20px; padding: 10px 16px calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--paper); }
+.sheet-foot { display: flex; justify-content: center; }
+
+@media (max-width: 359px) {
+  :root { --gutter: var(--space-3); }
+  .board { padding: var(--space-4); }
+  .board-title { font-size: 24px; }
+  .seg button { font-size: 12px; }
+  .brand-name { font-size: 18px; }
+  .time-num { font-size: 38px; }
+  .time.is-dep .time-num { font-size: 26px; }
+  .item-row { grid-template-columns: minmax(0, 1fr) 84px 44px; }
+  /* 두 칸으로 나누면 선택 상자의 글자가 잘려서 한 줄에 하나씩 */
+  .field-row { grid-template-columns: minmax(0, 1fr); }
+  /* QR 만들기 버튼 글자가 두 줄로 꺾이지 않게 */
+  .qr .btn { gap: var(--space-1); padding-left: 10px; padding-right: 10px; font-size: 14px; white-space: nowrap; }
+}
+
+/* 여러 화면에서 사용하는 표면과 상태 */
+.panel, .rows, .cal, .steps, .guide-list, .signword, .airport-field {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+.airport-field { padding: var(--space-4); background: var(--paper); }
+.bar, .meter { border-radius: var(--radius-pill); }
+.btn-line[aria-pressed="true"], .day[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px var(--navy);
+}
+.seg button[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--navy);
+  box-shadow: var(--shadow-card);
+}
+.seg-sub button[aria-pressed="true"] { background: var(--sign); color: var(--ink); font-weight: 800; }
+.day[aria-pressed="true"]:not(.is-dep) { background: var(--tint); }
+.input { background-color: var(--floor); }
+.input:focus-visible { background-color: var(--paper); }
+
+@media (hover: hover) {
+  .tripchip:hover { background: var(--navy); }
+  .tab:hover .ic, .iconbtn:hover,
+  .day:not(.is-dep):hover, .seg button[aria-pressed="false"]:hover {
+    background: var(--tint);
+  }
+  .tab[aria-current="page"]:hover .ic { background: var(--sign-soft); }
+  .tabs .tab-departure:hover .ic { background: var(--sign-hover); }
+  .tabs .tab-departure[aria-current="page"]:hover .ic { background: var(--navy); }
+  .iconbtn-action.is-danger:hover { background: var(--risk-bg); }
+}
+
+@media (min-width: 600px) {
+  :root { --gutter: var(--space-6); --section-gap: 40px; }
+  .view { padding-top: var(--space-6); }
+  .board { padding: var(--space-6); }
+  .slips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .slip { height: 100%; }
+  .slip-actions { margin-top: auto; }
+}
+
+@media (min-width: 800px) and (min-height: 600px) {
+  .app {
+    height: calc(100% - 2 * var(--space-6));
+    margin-block: var(--space-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-feature);
+    box-shadow: var(--shadow-raised);
+  }
+  dialog { margin: auto; border-radius: var(--radius-feature); }
+}
+</style>
+</head>
+<body>
+
+<!-- 아이콘 모음: 화면에서는 <use href="#i-이름">으로 불러 씁니다 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6"></path><path d="M9 12h6"></path></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 3L3 10l7 3 3 7z"></path><path d="M10 13l5-5"></path></symbol>
+  <symbol id="i-guide" viewBox="0 0 24 24"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M4 6h1"></path><path d="M4 12h1"></path><path d="M4 18h1"></path></symbol>
+  <symbol id="i-kiosk" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="13" rx="2"></rect><path d="M9 7h6"></path><path d="M9 11h3"></path><path d="M12 16v4"></path><path d="M8 20h8"></path></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></symbol>
+  <symbol id="i-case" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="13" rx="2"></rect><path d="M9 7V4h6v3"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></symbol>
+  <symbol id="i-yen" viewBox="0 0 24 24"><path d="M7 4l5 7 5-7"></path><path d="M12 11v9"></path><path d="M8 13h8"></path><path d="M8 16.5h8"></path></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"></path><path d="M12 10v5"></path><path d="M12 18h.01"></path></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"></path></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="m14.5 6.5 3 3M4 20l4.6-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20z"></path></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"></path></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15"></path><path d="M13 6l6 6-6 6"></path></symbol>
+  <symbol id="i-passport" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"></rect><circle cx="12" cy="10" r="3"></circle><path d="M9 16h6"></path></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path><path d="M6 15h4"></path></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0"></path><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19.5h.01"></path></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="9" r="2.5"></circle></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3h-3z"></path><path d="M20.5 14.5h.01"></path><path d="M20.5 20.5h.01"></path><path d="M14.5 20.5h.01"></path><path d="M20.5 17.5h.01"></path><path d="M17.5 20.5h.01"></path></symbol>
+</svg>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <span class="brand-mark" lang="ja" aria-hidden="true">ゴ</span>
+      <span class="brand-name disp">TaxGo</span>
+    </div>
+    <button type="button" class="tripchip" id="tripchip" data-act="trip" data-key="tripchip">여행 정보</button>
+  </header>
+
+  <div class="previewbar" id="previewbar" hidden>
+    <span id="previewtext"></span>
+    <button type="button" class="btn-text" data-act="preview" data-arg="auto">지금으로 돌아가기</button>
+  </div>
+
+  <main class="view" id="view" tabindex="-1">
+    <noscript><p>이 앱은 자바스크립트를 켜야 쓸 수 있습니다.</p></noscript>
+  </main>
+
+  <nav class="tabs" aria-label="주요 메뉴">
+    <a class="tab" href="#home" data-act="tab" data-arg="home"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-home"></use></svg><span>홈</span></a>
+    <a class="tab" href="#receipts" data-act="tab" data-arg="receipts"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-receipt"></use></svg><span>영수증</span></a>
+    <a class="tab tab-departure" href="#departure" data-act="tab" data-arg="departure"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-kiosk"></use></svg><span>출국</span></a>
+    <a class="tab" href="#calendar" data-act="tab" data-arg="calendar"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-cal"></use></svg><span>캘린더</span></a>
+    <a class="tab" href="#guide" data-act="tab" data-arg="guide"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-guide"></use></svg><span>가이드</span></a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<!-- 영수증 추가·수정: 금액은 '합계만 입력'과 '물품별 입력' 가운데 고릅니다 -->
+<dialog id="dlg-receipt" aria-labelledby="dlg-receipt-title">
+  <form class="sheet" id="form-receipt" novalidate>
+    <div class="sheet-head">
+      <h2 class="sheet-title disp" id="dlg-receipt-title">영수증 추가</h2>
+      <button type="button" class="iconbtn" data-act="close" data-arg="dlg-receipt" aria-label="닫기"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-close"></use></svg></button>
+    </div>
+    <div class="field">
+      <label for="r-store">매장 이름</label>
+      <input class="input" id="r-store" name="store" type="text" maxlength="40" autocomplete="off" placeholder="예: 드럭스토어 텐진점">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="r-date">구매일</label>
+        <input class="input" id="r-date" name="date" type="date">
+      </div>
+      <div class="field">
+        <label for="r-rate">세율</label>
+        <select class="input" id="r-rate" name="rate">
+          <option value="10">10% 일반</option>
+          <option value="8">8% 식품·음료</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <span class="label" id="r-mode-label">금액 입력 방식</span>
+      <div class="seg" role="group" aria-labelledby="r-mode-label">
+        <button type="button" id="r-mode-total" data-act="formMode" data-arg="total" aria-pressed="true">합계만 입력</button>
+        <button type="button" id="r-mode-items" data-act="formMode" data-arg="items" aria-pressed="false">물품별 입력</button>
+      </div>
+    </div>
+    <div class="field" id="r-total-field">
+      <label for="r-total">결제 금액 <span class="hint">세금 포함, 엔</span></label>
+      <input class="input num" id="r-total" name="total" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 16500">
+    </div>
+    <div class="field" id="r-items-field" hidden>
+      <span class="label" id="r-items-label">물품 <span class="hint">금액은 세금 포함, 엔</span></span>
+      <ul class="item-rows" id="r-items" aria-labelledby="r-items-label"></ul>
+      <div class="item-foot">
+        <button type="button" class="btn btn-line btn-sm" id="r-add-item" data-act="formAddItem"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-plus"></use></svg>물품 추가</button>
+        <span class="item-sum" id="r-items-sum" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="calc" id="r-calc" aria-live="polite"></div>
+    <div class="field-row">
+      <div class="field">
+        <label for="r-method">환급 방법</label>
+        <select class="input" id="r-method" name="method"></select>
+      </div>
+      <div class="field">
+        <label for="r-fee">환급 수수료 <span class="hint">있으면, 엔</span></label>
+        <input class="input num" id="r-fee" name="fee" type="text" inputmode="numeric" autocomplete="off" placeholder="0">
+      </div>
+    </div>
+    <div class="sheet-end">
+      <p class="form-msg" id="r-msg" role="alert"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-line" data-act="close" data-arg="dlg-receipt">취소</button>
+        <button type="submit" class="btn btn-sign" id="r-submit">영수증 저장</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- 여행 정보 -->
+<dialog id="dlg-trip" aria-labelledby="dlg-trip-title">
+  <form class="sheet" id="form-trip" novalidate>
+    <div class="sheet-head">
+      <h2 class="sheet-title disp" id="dlg-trip-title">여행 정보</h2>
+      <button type="button" class="iconbtn" data-act="close" data-arg="dlg-trip" aria-label="닫기"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-close"></use></svg></button>
+    </div>
+    <div class="field">
+      <label for="t-airport">출국 공항·항구</label>
+      <select class="input" id="t-airport" name="airport"></select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="t-date">출국일</label>
+        <input class="input" id="t-date" name="date" type="date">
+      </div>
+      <div class="field">
+        <label for="t-time">출발 시각</label>
+        <input class="input" id="t-time" name="time" type="time">
+      </div>
+    </div>
+    <p class="form-msg" id="t-msg" role="alert"></p>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-line" data-act="close" data-arg="dlg-trip">취소</button>
+      <button type="submit" class="btn btn-sign">여행 정보 저장</button>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" class="btn-text" data-act="resetSample">예시 데이터로 되돌리기</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/*
+ * TaxGo: 데이터
+ * 규칙 숫자, 공항 정보, 화면 문구를 코드와 분리해 둔 파일입니다.
+ * 공항을 늘리거나 문구를 고칠 때는 이 파일만 고치면 됩니다.
+ * 문장은 '~합니다'로 씁니다. 할 일을 안내하는 문장만 '~하세요', '~해 주세요'로 씁니다.
+ * 자정을 넘는 시각은 '25:30'이 아니라 '다음 날 01:30'처럼 씁니다.
+ * 내용 확인일: 공항 정보 2026-11-13, 면세 QR·절차 소요 시간 2026-11-16 (출처는 맨 아래 sources)
+ */
+window.MYGO_DATA = {
+  checkedAt: '2026.11.13',          // 공항별 키오스크 정보를 확인한 날
+  sourcesCheckedAt: '2026.11.13~16', // 근거 자료를 확인한 기간
+
+  rules: {
+    minPreTax: 5000,      // 같은 매장에서 같은 날 산 세전 합계의 하한 (엔)
+    deadlineDays: 90,     // 구매 다음 날부터 세어 90일째까지 출국 (11.1 구매 → 1.30)
+
+    // 공항 도착 목표를 자동으로 정하는 기준.
+    // 공식 안내는 '일찍 도착'만 권하고 몇 시간 전인지는 정해 두지 않아서, 아래 숫자는 팀에서 정한 값입니다.
+    arrive: {
+      baseHours: 3,          // 보통은 출발 3시간 전
+      maxHours: 5,           // 가장 이르게 잡아도 5시간 전까지
+      manyReceipts: 4,       // 면세 영수증이 이만큼 이상이면 1시간 앞당김
+      manyItems: 15,         // 또는 면세품이 이만큼 이상이면 1시간 앞당김 (합계만 넣은 영수증은 1개로 셈)
+      busyWeekdays: [0, 6],  // 일요일(0)·토요일(6) 출발이면 1시간 앞당김
+      busyPeriods: [         // 일본의 큰 연휴에 출발하면 1시간 앞당김 ('월-일', 해마다 비슷한 기간)
+        { from: '12-28', to: '01-04', label: '연말연시' },
+        { from: '04-29', to: '05-06', label: '골든위크' },
+        { from: '08-10', to: '08-16', label: '오봉 연휴' }
+      ]
+    }
+  },
+
+  // 환급 방법 (매장에서 살 때 정하는 것)
+  methods: [
+    { id: 'card', label: '신용카드' },
+    { id: 'bank', label: '계좌·QR결제' },
+    { id: 'cash', label: '공항에서 현금' },
+    { id: 'unknown', label: '아직 모름' }
+  ],
+
+  // 여행 시점별로 홈 맨 위 안내판에 띄울 내용
+  phases: {
+    setup: {
+      chip: '시작', picto: 'plane',
+      title: '출국일을 알려 주세요',
+      body: '출국일에 맞춰 그때그때 할 일을 알려 드립니다.',
+      cta: '여행 정보 입력', act: 'trip'
+    },
+    shop: {
+      chip: '쇼핑 중', picto: 'bag',
+      title: '여행 중 먹을 건 따로 계산하세요',
+      body: '면세 영수증에 든 물건은 출국 전에 먹거나 쓰면 안 됩니다. 하나라도 없으면 그 영수증 전체를 환급받을 수 없습니다.',
+      cta: '영수증 추가', act: 'add'
+    },
+    eve: {
+      chip: '출국 전날', picto: 'case',
+      title: '면세품은 영수증별로 묶어 담으세요',
+      body: '먹거나 쓴 물건이 있으면 지금 표시해 두세요. 물품 중 하나라도 없으면 그 영수증 전체를 환급받을 수 없습니다.',
+      cta: '영수증 점검', act: 'tab', arg: 'receipts'
+    },
+    day: {
+      chip: '출국 당일', picto: 'kiosk',
+      title: '체크인보다 키오스크 먼저',
+      body: '짐을 맡긴 뒤에는 세관 확인을 받을 수 없습니다.',
+      cta: '출국 체크리스트 열기', act: 'tab', arg: 'departure'
+    },
+    after: {
+      chip: '출국 후', picto: 'yen',
+      title: '환급이 들어왔는지 확인하세요',
+      body: '카드와 계좌 환급은 출국한 뒤에 들어옵니다. 안 보이면 구매한 매장이나 환급 대행사에 문의하세요.',
+      cta: '영수증별 환급 방법 보기', act: 'tab', arg: 'receipts'
+    }
+  },
+
+  // 알림 문구와 시각 (출국일 기준). 출국 당일 알림은 공항 도착 목표 시각에 울립니다.
+  reminders: {
+    eve: { time: '21:00', title: '면세품은 먹거나 쓰지 않기', body: '하나라도 없으면 그 영수증 전체를 환급받을 수 없습니다. 영수증별로 묶어 담으세요.' },
+    day: { title: '체크인보다 키오스크 먼저', body: '짐을 맡긴 뒤에는 세관 확인을 받을 수 없습니다.' },
+    refund: { daysAfter: 7, time: '10:00', title: '환급이 들어왔는지 확인', body: '카드와 계좌 환급은 출국한 뒤에 들어옵니다. 안 보이면 구매한 매장에 문의하세요.' },
+    guard: { daysBefore: 7, time: '10:00', title: '90일 출국 기한 7일 전', body: '기한 안에 출국해야 환급받을 수 있습니다.' }
+  },
+
+  // 출국 공항·항구별 면세 절차 위치
+  // red, cash: '본문 (운영 06:00–21:00, 단말 5대처럼 이름을 붙인 시간·대수, 쉼표로 여러 개). 덧붙임 문장' 모양으로 쓰면 안내판에서 본문은 크게, 괄호 속은 칩으로, 덧붙임은 작은 글씨로 나눠 보여 줍니다 (괄호와 덧붙임은 없어도 됨)
+  // vjw: 휴대폰(Visit Japan Web)으로 판정을 받을 수 있는 공항이면 true
+  // open: 키오스크 운영 시작 시각을 아는 곳만. 공항 도착 목표가 이보다 이르면 이 시각에 맞춥니다
+  // ship: 배편이면 true ('비행기 출발' 대신 '배 출발'로 표시)
+  airports: [
+    {
+      id: 'fuk', name: '후쿠오카공항 국제선', short: '후쿠오카',
+      kiosk: '국제선 3F 남쪽 J–M 카운터 앞',
+      count: '12대', hours: '06:00–21:00', open: '06:00',
+      red: '키오스크 바로 옆 세관 확인 장소에서 여권과 물건을 보여 줍니다 (운영 06:00–21:00)',
+      cash: '출국심사 뒤 면세점 구역, HAKATA FOOD HALL 입구 옆 (단말 06:00–21:00, 카운터 07:00–21:00)',
+      vjw: true,
+      note: '휴대폰 판정은 3F 출발 로비의 세관 전용 Wi-Fi에서만 됩니다.',
+      src: '후쿠오카공항 공식 안내', url: 'https://www.fukuoka-airport.jp/taxrefund_info.html'
+    },
+    {
+      id: 'hkt', name: '하카타항 국제터미널 (배)', short: '하카타항', ship: true,
+      kiosk: '승선 수속 전 구역 (위치 확인 필요)',
+      count: '확인 필요', hours: '확인 필요',
+      red: '세관 직원에게 여권과 물건을 보여 줍니다',
+      cash: '구매한 매장이 안내한 환급 방법을 확인하세요',
+      vjw: false,
+      note: '부산행 배편도 환급 대상입니다. 단말 위치는 공개 자료를 찾지 못해 현장 확인이 필요합니다.',
+      src: '관광청 공통 안내', url: 'https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00021.html'
+    },
+    {
+      id: 'kix1', name: '간사이공항 제1터미널', short: '간사이 T1',
+      kiosk: '4F 국제선 출발 로비, 짐 맡기기 전 구역',
+      count: '12대', hours: '공항 안내 확인',
+      red: '4F 세관 검사장에서 여권과 물건을 보여 줍니다',
+      cash: '구매한 매장이 안내한 환급 방법을 확인하세요',
+      vjw: true,
+      note: '키오스크가 붐빌 수 있어서 전용 Wi-Fi에서 휴대폰으로 판정받는 것을 권합니다.',
+      src: '오사카세관 안내', url: 'https://www.customs.go.jp/osaka/about/images/kix_tax%20refund_en.pdf'
+    },
+    {
+      id: 'kix2', name: '간사이공항 제2터미널', short: '간사이 T2',
+      kiosk: '체크인 로비, 보안검사 전 구역',
+      count: '4대', hours: '공항 안내 확인',
+      red: '체크인 로비의 세관 검사장에서 여권과 물건을 보여 줍니다',
+      cash: '구매한 매장이 안내한 환급 방법을 확인하세요',
+      vjw: true,
+      note: '',
+      src: '오사카세관 안내', url: 'https://www.customs.go.jp/osaka/about/images/kix_tax%20refund_en.pdf'
+    },
+    {
+      id: 'hnd3', name: '하네다공항 제3터미널', short: '하네다 T3',
+      kiosk: '3F 보안검사 전 구역',
+      count: '13대', hours: '24시간',
+      red: '출발 로비 세관 검사장에서 여권과 물건을 보여 줍니다',
+      cash: 'Self Tax Refund 단말, 3F 보안검사 뒤 (단말 5대, 운영 24시간). 현금 환급을 지원하는 매장 구매분만 됩니다',
+      vjw: true,
+      note: '',
+      src: '하네다공항 공식 안내', url: 'https://tokyo-haneda.com/service/facilities/tax_refund.html'
+    },
+    {
+      id: 'hnd2', name: '하네다공항 제2터미널', short: '하네다 T2',
+      kiosk: '3F 보안검사 전 구역',
+      count: '8대', hours: '06:00–다음 날 02:00', open: '06:00',
+      red: '출발 로비 세관 검사장에서 여권과 물건을 보여 줍니다',
+      cash: 'Self Tax Refund 단말, 3F 보안검사 뒤 (단말 5대, 운영 06:45–다음 날 01:30). 현금 환급을 지원하는 매장 구매분만 됩니다',
+      vjw: true,
+      note: '제1터미널에는 면세 절차가 없습니다.',
+      src: '하네다공항 공식 안내', url: 'https://tokyo-haneda.com/service/facilities/tax_refund.html'
+    },
+    {
+      id: 'ngo1', name: '주부 센트레아 제1터미널', short: '주부 T1',
+      kiosk: '국제선 체크인 카운터 앞',
+      count: '공항 안내 확인', hours: '운항 일정에 맞춤',
+      red: '키오스크 근처 세관 확인 장소에서 여권과 물건을 보여 줍니다',
+      cash: '3F 출발 로비의 현금 환급 카운터와 단말 (엔화만)',
+      vjw: true,
+      note: '키오스크가 붐비면 키오스크 근처에서 휴대폰으로도 판정받을 수 있습니다.',
+      src: '센트레아 공식 안내', url: 'https://www.centrair.jp/ko/taxrefund/'
+    },
+    {
+      id: 'other', name: '그 밖의 공항·항구', short: '기타',
+      kiosk: '국제선 출발 로비, 짐 맡기기 전 구역',
+      count: '공항 안내 확인', hours: '공항 안내 확인',
+      red: '키오스크 근처 세관 검사 장소에서 여권과 물건을 보여 줍니다',
+      cash: '구매한 매장이 안내한 환급 방법을 확인하세요',
+      vjw: false,
+      note: '나리타, 신치토세, 나하 공항은 휴대폰(Visit Japan Web) 판정도 됩니다.',
+      src: '관광청 공통 안내', url: 'https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00021.html'
+    }
+  ],
+
+  // 출국일 체크리스트. {arrive} {kiosk} {red} {cash}는 여행 정보와 선택한 공항에 맞춰 바뀝니다.
+  checklist: [
+    { title: '공항 도착', desc: '{arrive}' },
+    { title: '면세품 꺼내 두기', desc: '영수증별로 묶어서 바로 보여 줄 수 있게 합니다.' },
+    { title: '키오스크에 여권 스캔', desc: '{kiosk}', key: true },
+    { title: 'RED가 나오면 세관 확인', desc: '{red}' },
+    { title: '체크인, 짐 맡기기', desc: '판정을 받은 다음에 맡깁니다.' },
+    { title: '보안검사, 출국심사', desc: '지나면 출발 로비로 돌아올 수 없습니다.' },
+    { title: '현금 환급 받기', desc: '{cash}', only: '현금 환급을 고른 영수증만' }
+  ],
+
+  // 면세 QR 만들기: 가이드의 매장 단계 맨 위 안내판에 나옵니다 (guide에서 qr: true인 단계)
+  qr: {
+    title: '면세 QR 만들기',
+    sub: '계산할 때 여권 대신 보여 줍니다',
+    steps: [
+      '출발 전에 Visit Japan Web에 로그인하고, 여권을 카메라로 읽어 등록합니다.',
+      '일본에 입국한 뒤, 여권에 붙은 상륙 허가 스티커를 카메라로 읽습니다.',
+      '계산할 때 면세 QR 화면을 띄워 보여 줍니다.'
+    ],
+    cta: 'Visit Japan Web에서 QR 만들기',
+    url: 'https://www.vjw.digital.go.jp/',
+    host: '공식 주소 vjw.digital.go.jp (무료)',
+    notes: [
+      'QR은 만든 뒤 24시간만 쓸 수 있습니다. 지나면 다시 띄우면 됩니다.',
+      '스크린샷이나 인쇄본은 쓸 수 없습니다. 화면을 직접 보여 주세요.',
+      '등록해 둔 정보는 출국할 때 공항에서 휴대폰으로 판정받는 데도 쓰입니다.'
+    ]
+  },
+
+  // 절차 가이드 (순서가 있는 3단계)
+  guide: [
+    {
+      tab: '매장', title: '매장에서 살 때', qr: true,
+      items: [
+        { icon: 'passport', title: '여권이나 면세 QR 보여 주기', desc: '계산할 때 여권이나 Visit Japan Web의 면세 QR 화면을 보여 줍니다. QR을 읽지 못하는 매장에서는 여권을 보여 주면 됩니다.' },
+        { icon: 'yen', title: '세금 포함 가격으로 결제', desc: '세금은 출국한 뒤에 돌려받습니다. 일반 물품은 10%, 식품과 음료(술 제외)는 8%입니다.' },
+        { icon: 'card', title: '환급 방법 정하기', desc: '신용카드, 계좌, QR결제, 공항 현금 가운데 그 매장에서 되는 방법으로 정합니다. 수수료도 이때 확인합니다.' },
+        { icon: 'receipt', title: '세전 5,000엔 이상', desc: '같은 매장에서 같은 날 산 금액을 합친 기준입니다.' }
+      ],
+      tip: { tone: 'sign', title: '여행 중 먹을 건 따로 계산하세요', desc: '면세 영수증에 든 물건을 하나라도 먹거나 쓰면 그 영수증 전체를 환급받을 수 없습니다.' }
+    },
+    {
+      tab: '공항', title: '공항에서 출국할 때',
+      items: [
+        { icon: 'kiosk', title: '짐 맡기기 전에 키오스크부터', desc: '출발 로비의 면세 키오스크에 여권을 스캔합니다. 짐을 맡긴 뒤에는 확인받을 수 없습니다.' },
+        { icon: 'search', title: 'GREEN이면 끝, RED면 세관 검사', desc: 'RED가 나오면 세관 검사 장소에서 여권과 산 물건을 보여 줍니다.' },
+        { icon: 'wifi', title: '휴대폰으로도 판정', desc: '나리타, 하네다, 간사이, 주부, 후쿠오카, 신치토세, 나하 공항은 출발 로비의 전용 Wi-Fi에서 Visit Japan Web으로 할 수 있습니다.' },
+        { icon: 'cal', title: '구매일부터 90일 안에 출국', desc: '구매 다음 날부터 세어 90일째까지입니다. 국내선으로 갈아타면 마지막 출국 공항에서 합니다.' }
+      ],
+      tip: { tone: 'risk', title: '먹었거나 없는 물건이 있다면', desc: '키오스크 대신 세관 직원에게 먼저 말하세요. 출국심사를 지나면 출발 로비로 돌아올 수 없습니다.' }
+    },
+    {
+      tab: '환급', title: '환급받기',
+      items: [
+        { icon: 'shield', title: '돈은 매장(환급 대행사)이 보냅니다', desc: '세관은 물건을 가지고 나가는지만 확인합니다.' },
+        { icon: 'card', title: '카드, 계좌, QR결제', desc: '출국한 뒤에 들어옵니다. 시기와 수수료는 매장마다 다릅니다.' },
+        { icon: 'yen', title: '공항에서 현금', desc: '키오스크 확인 뒤 공항의 환급 단말이나 카운터에서 받습니다. 현금 환급을 지원하는 매장에서 산 것만 됩니다.' }
+      ],
+      tip: null
+    }
+  ],
+
+  // 한국에 들어올 때 면세한도 (1인 기준)
+  allowance: [
+    { label: '기본', value: '800달러' },
+    { label: '술 (별도)', value: '합쳐서 2L, 400달러 이하 (병 수 제한 없음)' },
+    { label: '향수 (별도)', value: '100mL' },
+    { label: '담배 (별도)', value: '200개비' }
+  ],
+
+  // 공항 표지판 일본어. hun은 한자 훈음
+  signs: [
+    { ja: '免税手続', yomi: 'めんぜいてつづき', ko: '면세 절차', hun: '免 면할 면, 税 세금 세, 手 손 수, 続 이을 속' },
+    { ja: '税関確認', yomi: 'ぜいかんかくにん', ko: '세관 확인', hun: '税 세금 세, 関 빗장 관, 確 굳을 확, 認 알 인' },
+    { ja: '手荷物預け', yomi: 'てにもつあずけ', ko: '짐 맡기기', hun: '手 손 수, 荷 멜 하, 物 물건 물, 預 맡길 예' },
+    { ja: '出国審査', yomi: 'しゅっこくしんさ', ko: '출국심사', hun: '出 날 출, 国 나라 국, 審 살필 심, 査 조사할 사' }
+  ],
+
+  sources: [
+    { label: '관광청: 리펀드 방식 안내', url: 'https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00021.html' },
+    { label: '관광청: 여행자용 안내 (영어)', url: 'https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00028.html' },
+    { label: '관광청: 자주 묻는 질문 (절차에 걸리는 시간)', url: 'https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00050.html' },
+    { label: '국세청: 리펀드 방식 Q&A (90일 계산)', url: 'https://www.nta.go.jp/publication/pamph/shohi/menzei/201805/pdf/0025003-110_02.pdf' },
+    { label: '국세청: 온라인 세관 확인 FAQ (한국어)', url: 'https://www.nta.go.jp/publication/pamph/shohi/menzei/201805/format/002/onlinetetsuzuki/faqkor.htm' },
+    { label: '디지털청: Visit Japan Web 면세 QR 개요', url: 'https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/c35856f8-dffd-408d-ba8e-2bcc368b3061/de5d8152/20230203_policies_visit_japan_web_outline_01.pdf' },
+    { label: '후쿠오카공항: 면세 절차 위치', url: 'https://www.fukuoka-airport.jp/taxrefund_info.html' },
+    { label: '하네다공항: TAX REFUND', url: 'https://tokyo-haneda.com/service/facilities/tax_refund.html' },
+    { label: '오사카세관: 간사이공항 면세 절차', url: 'https://www.customs.go.jp/osaka/about/images/kix_tax%20refund_en.pdf' },
+    { label: '센트레아: 면세 절차 (한국어)', url: 'https://www.centrair.jp/ko/taxrefund/' }
+  ]
+};
+</script>
+<script>
+/*
+ * TaxGo: 계산 로직
+ * 화면과 무관한 순수 함수만 모았습니다. 날짜, 세금, 영수증, 여행 시점, 공항 도착 목표, 알림 일정을 계산합니다.
+ * node에서도 그대로 실행되므로 test/logic.test.js로 바로 검증할 수 있습니다.
+ */
+(function (root) {
+  'use strict';
+
+  var DAY = 86400000;
+  var HOUR = 3600000;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  /* ---------- 날짜 ----------
+     날짜는 'YYYY-MM-DD' 문자열로 주고받고, 계산할 때만 현지 시각 정오의 Date로 바꿉니다.
+     (한국과 일본은 같은 시간대라 기기 시각을 그대로 씁니다.) */
+  function toISO(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+  function parseISO(iso) {
+    var p = String(iso).split('-');
+    return new Date(+p[0], +p[1] - 1, +p[2], 12, 0, 0, 0);
+  }
+
+  function addDays(iso, n) {
+    var d = parseISO(iso);
+    d.setDate(d.getDate() + n);
+    return toISO(d);
+  }
+
+  /* fromISO에서 untilISO까지 남은 날 수 (같은 날이면 0) */
+  function diffDays(fromISO, untilISO) {
+    return Math.round((parseISO(untilISO).getTime() - parseISO(fromISO).getTime()) / DAY);
+  }
+
+  /* 날짜와 'HH:MM'을 합쳐 Date로 */
+  function at(iso, hhmm) {
+    var d = parseISO(iso);
+    var m = /^(\d{1,2}):(\d{2})$/.exec(hhmm || '');
+    d.setHours(m ? +m[1] : 12, m ? +m[2] : 0, 0, 0);
+    return d;
+  }
+
+  /* ---------- 세금 ----------
+     세금 포함 금액에서 세전 금액을 구합니다(엔 미만 버림). 면세 기준(세전 5,000엔)을
+     넉넉하게 보지 않으려고 세전 쪽을 버림합니다. 영수증에 적힌 세액과 1엔쯤 다를 수 있습니다. */
+  function preTaxOf(total, rate) { return Math.floor(total * 100 / (100 + rate)); }
+  function taxOf(total, rate) { return total - preTaxOf(total, rate); }
+
+  /* 구매 다음 날부터 세어 days일째 = 구매일 + days (11.1 구매, 90일 → 1.30) */
+  function deadlineOf(buyISO, days) { return addDays(buyISO, days); }
+
+  /* ---------- 영수증 ----------
+     영수증은 두 가지 방식으로 입력합니다.
+     - mode 'total': 결제 금액 합계만 넣음. 소비 여부는 영수증 단위(consumed)
+     - mode 'items': 물품을 하나씩 넣음. 합계는 물품 금액의 합, 소비 여부는 물품 단위(items[i].used) */
+  function isItemized(r) { return !!r && r.mode === 'items' && Array.isArray(r.items) && r.items.length > 0; }
+
+  /* 세금 포함 결제 금액 */
+  function totalOf(r) {
+    if (!isItemized(r)) return Math.max(0, Math.floor(+r.total || 0));
+    var sum = 0;
+    for (var i = 0; i < r.items.length; i++) sum += Math.max(0, Math.floor(+r.items[i].price || 0));
+    return sum;
+  }
+
+  /* 먹었거나 써서 없다고 체크한 물품 수 (물품별 입력일 때만) */
+  function usedCountOf(r) {
+    var n = 0;
+    if (isItemized(r)) for (var i = 0; i < r.items.length; i++) if (r.items[i].used) n += 1;
+    return n;
+  }
+
+  /* 먹었거나 써서 없는 물건이 하나라도 있으면 그 영수증 전체가 환급 불가 */
+  function isConsumed(r) { return isItemized(r) ? usedCountOf(r) > 0 : !!r.consumed; }
+
+  /* 영수증 한 장의 계산 결과
+     status: ok(환급 가능) / consumed(먹었거나 없는 물건 있음) / late(출국일이 기한 뒤) / under(면세 기준 미달)
+     count: 물품 수(합계만 넣은 영수증은 0), used: 그중 소비한 물품 수 */
+  function receiptView(r, rules, depISO) {
+    var rate = +r.rate === 8 ? 8 : 10;
+    var total = totalOf(r);
+    var pre = preTaxOf(total, rate);
+    var tax = total - pre;
+    var fee = Math.min(Math.max(0, Math.floor(+r.fee || 0)), tax);
+    var eligible = pre >= rules.minPreTax;
+    var due = deadlineOf(r.date, rules.deadlineDays);
+    var late = !!depISO && depISO > due;
+    var status = !eligible ? 'under' : isConsumed(r) ? 'consumed' : late ? 'late' : 'ok';
+    return {
+      total: total, pre: pre, tax: tax, fee: fee, net: tax - fee, eligible: eligible, due: due, status: status,
+      count: isItemized(r) ? r.items.length : 0, used: usedCountOf(r)
+    };
+  }
+
+  /* 영수증 전체 합계
+     goodsReceipts / goodsItems: 공항에서 확인받을 면세 영수증 수와 물품 수 (합계만 넣은 영수증은 물품 1개로 셈) */
+  function summarize(receipts, rules, depISO) {
+    var s = { count: receipts.length, refund: 0, risk: 0, okCount: 0, riskCount: 0, goodsReceipts: 0, goodsItems: 0, earliestDue: '' };
+    receipts.forEach(function (r) {
+      var v = receiptView(r, rules, depISO);
+      if (v.status === 'ok') {
+        s.refund += v.net; s.okCount += 1;
+      } else if (v.status !== 'under') {
+        s.risk += v.net; s.riskCount += 1;
+      }
+      if (v.status !== 'under') {
+        s.goodsReceipts += 1;
+        s.goodsItems += v.count || 1;
+      }
+      if ((v.status === 'ok' || v.status === 'late') && (!s.earliestDue || v.due < s.earliestDue)) s.earliestDue = v.due;
+    });
+    return s;
+  }
+
+  /* ---------- 여행 시점 ----------
+     setup(출국일 없음) / shop(쇼핑 중) / eve(출국 전날) / day(출국 당일) / after(출국 후) */
+  function phaseOf(now, trip) {
+    if (!trip || !trip.depDate) return 'setup';
+    if (now.getTime() >= at(trip.depDate, trip.depTime).getTime()) return 'after';
+    var left = diffDays(toISO(now), trip.depDate);
+    if (left <= 0) return 'day';
+    if (left === 1) return 'eve';
+    return 'shop';
+  }
+
+  function dLabel(now, depISO) {
+    var left = diffDays(toISO(now), depISO);
+    return left > 0 ? 'D-' + left : left === 0 ? 'D-day' : 'D+' + (-left);
+  }
+
+  /* ---------- 공항 도착 목표 ----------
+     보통은 출발 3시간 전. 붐비는 날(주말, 일본의 큰 연휴)에 출발하거나 면세품이 많으면
+     1시간씩 앞당겨 최대 5시간 전까지 자동으로 정합니다. 기준 숫자는 data.js의 rules.arrive에 있습니다.
+     trip.lead가 3~5이면 사용자가 직접 고른 값이라 그대로 씁니다(0이면 자동).
+     키오스크 운영 시작(airport.open)보다 이르면 운영 시작 시각에 맞춥니다. */
+
+  /* 붐비는 날이면 이유를 돌려줍니다: 연휴 이름, 'weekend', 또는 ''(평소) */
+  function busyOf(depISO, a) {
+    var md = depISO.slice(5);
+    var periods = a.busyPeriods || [];
+    for (var i = 0; i < periods.length; i++) {
+      var p = periods[i];
+      /* from이 to보다 크면 해를 넘기는 기간 (예: 12-28 ~ 01-04) */
+      var inside = p.from <= p.to ? (md >= p.from && md <= p.to) : (md >= p.from || md <= p.to);
+      if (inside) return p.label;
+    }
+    return (a.busyWeekdays || []).indexOf(parseISO(depISO).getDay()) >= 0 ? 'weekend' : '';
+  }
+
+  /* 결과: at(도착 목표), dep(출발), hours(몇 시간 전), auto(자동인지), busy·many(앞당긴 이유),
+     receipts·items(면세 영수증·물품 수), clamped(키오스크 운영 시작에 맞췄는지), leadMin(실제로 출발 몇 분 전인지) */
+  function arrivalPlan(trip, receipts, rules, airport) {
+    if (!trip || !trip.depDate) return null;
+    var a = rules.arrive;
+    var dep = at(trip.depDate, trip.depTime);
+    var lead = Math.floor(+trip.lead || 0);
+    var manual = lead >= a.baseHours && lead <= a.maxHours;
+    var sum = summarize(receipts || [], rules, trip.depDate);
+    var busy = manual ? '' : busyOf(trip.depDate, a);
+    var many = !manual && (sum.goodsReceipts >= a.manyReceipts || sum.goodsItems >= a.manyItems);
+    var hours = manual ? lead : Math.min(a.maxHours, a.baseHours + (busy ? 1 : 0) + (many ? 1 : 0));
+    var target = new Date(dep.getTime() - hours * HOUR);
+    var clamped = false;
+    if (airport && airport.open) {
+      var openAt = at(trip.depDate, airport.open);
+      if (openAt.getTime() < dep.getTime() && target.getTime() < openAt.getTime()) {
+        target = openAt;
+        clamped = true;
+      }
+    }
+    return {
+      at: target, dep: dep, hours: hours, auto: !manual, busy: busy, many: many,
+      receipts: sum.goodsReceipts, items: sum.goodsItems, clamped: clamped,
+      leadMin: Math.round((dep.getTime() - target.getTime()) / 60000)
+    };
+  }
+
+  /* ---------- 알림 일정 ----------
+     출국일 기준 알림 3개 + 90일 기한 안전장치(출국일이 기한 7일 전보다 늦을 때만)
+     출국 당일 알림은 공항 도착 목표 시각에 맞춥니다. */
+  function buildReminders(trip, receipts, rules, texts, airport) {
+    var list = [];
+    var dep = trip && trip.depDate ? trip.depDate : '';
+    if (dep) {
+      var plan = arrivalPlan(trip, receipts, rules, airport);
+      list.push({ id: 'eve', at: at(addDays(dep, -1), texts.eve.time), title: texts.eve.title, body: texts.eve.body });
+      list.push({ id: 'day', at: plan.at, title: texts.day.title, body: texts.day.body + (airport ? ' 키오스크: ' + airport.kiosk : '') });
+      list.push({ id: 'refund', at: at(addDays(dep, texts.refund.daysAfter), texts.refund.time), title: texts.refund.title, body: texts.refund.body });
+    }
+    var due = summarize(receipts, rules, dep).earliestDue;
+    if (due) {
+      var guardISO = addDays(due, -texts.guard.daysBefore);
+      if (!dep || dep >= guardISO) {
+        list.push({ id: 'guard', at: at(guardISO, texts.guard.time), title: texts.guard.title, body: texts.guard.body + ' 기한: ' + due });
+      }
+    }
+    list.sort(function (a, b) { return a.at.getTime() - b.at.getTime(); });
+    return list;
+  }
+
+  /* ---------- 캘린더 파일(.ics) ----------
+     휴대폰 캘린더에 넣으면 앱을 닫아도 같은 시각에 알림이 울립니다. */
+  function icsEscape(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  }
+
+  /* 한 줄이 75옥텟을 넘지 않게 접기 (한글은 UTF-8에서 3바이트) */
+  function icsFold(line) {
+    var out = '';
+    var bytes = 0;
+    for (var i = 0; i < line.length; i++) {
+      var code = line.charCodeAt(i);
+      var b = code < 0x80 ? 1 : code < 0x800 ? 2 : 3;
+      if (bytes + b > 73) { out += '\r\n '; bytes = 1; }
+      out += line.charAt(i);
+      bytes += b;
+    }
+    return out;
+  }
+
+  function icsLocal(d) {
+    return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + 'T' + pad(d.getHours()) + pad(d.getMinutes()) + '00';
+  }
+
+  function icsUTC(d) {
+    return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) + 'T' +
+      pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + 'Z';
+  }
+
+  function toICS(reminders, stamp) {
+    var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//MAIGO//TaxGo//KO', 'CALSCALE:GREGORIAN'];
+    reminders.forEach(function (r) {
+      var end = new Date(r.at.getTime() + 15 * 60000);
+      lines.push(
+        'BEGIN:VEVENT',
+        'UID:' + r.id + '-' + icsLocal(r.at) + '@taxgo',
+        'DTSTAMP:' + icsUTC(stamp),
+        'DTSTART:' + icsLocal(r.at),
+        'DTEND:' + icsLocal(end),
+        'SUMMARY:' + icsEscape('[면세] ' + r.title),
+        'DESCRIPTION:' + icsEscape(r.body),
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:' + icsEscape(r.title),
+        'TRIGGER:-PT0M',
+        'END:VALARM',
+        'END:VEVENT'
+      );
+    });
+    lines.push('END:VCALENDAR');
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+  }
+
+  /* 공항 안내 문장(data.js의 red, cash)을 화면에서 따로따로 보여 주려고 세 덩어리로 나눕니다.
+     '본문 (괄호 속 부가 정보, 쉼표로 여러 개). 덧붙임 문장' 모양이고, 괄호와 덧붙임은 없어도 됩니다.
+     예) '출국심사 뒤 면세점 구역 (단말 06:00–21:00, 카운터 07:00–21:00). 현금 환급 매장만 돼요'
+         → { text: '출국심사 뒤 면세점 구역', meta: ['단말 06:00–21:00', '카운터 07:00–21:00'], extra: '현금 환급 매장만 돼요' } */
+  function splitInfo(str) {
+    var m = /^(.*?)(?:\s*\(([^()]*)\))?(?:\.\s+(.+?))?\.?$/.exec(String(str == null ? '' : str).trim());
+    var meta = [];
+    (m[2] || '').split(',').forEach(function (t) {
+      t = t.trim();
+      if (t) meta.push(t);
+    });
+    return { text: m[1], meta: meta, extra: m[3] || '' };
+  }
+
+  root.MYGO_LOGIC = {
+    pad: pad, toISO: toISO, parseISO: parseISO, addDays: addDays, diffDays: diffDays, at: at,
+    splitInfo: splitInfo,
+    preTaxOf: preTaxOf, taxOf: taxOf, deadlineOf: deadlineOf,
+    totalOf: totalOf, usedCountOf: usedCountOf, isConsumed: isConsumed,
+    receiptView: receiptView, summarize: summarize,
+    phaseOf: phaseOf, dLabel: dLabel,
+    busyOf: busyOf, arrivalPlan: arrivalPlan,
+    buildReminders: buildReminders, toICS: toICS
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/*
+ * TaxGo: 화면
+ * state(저장되는 데이터)나 ui(화면 상태)를 바꾼 뒤 render()를 부르면 지금 탭을 다시 그립니다.
+ * 계산은 logic.js, 문구와 공항 정보는 data.js에 있습니다.
+ */
+(function () {
+  'use strict';
+
+  var D = window.MYGO_DATA;
+  var L = window.MYGO_LOGIC;
+  var A = D.rules.arrive;
+  var STORE_KEY = 'taxgo-v1';
+  var OLD_STORE_KEY = 'mygo-taxfree-v1';   // 앱 이름을 바꾸기 전에 쓰던 저장 키
+  var TABS = ['home', 'receipts', 'calendar', 'departure', 'guide'];
+  var WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+  var PREVIEWS = [['auto', '지금'], ['shop', '쇼핑 중'], ['eve', '전날'], ['day', '당일'], ['after', '출국 후']];
+  var DEP_TABS = [['steps', '체크리스트'], ['result', '키오스크 결과'], ['signs', '표지판 읽기']];   // 출국 화면의 부가 메뉴
+  var MAX_ITEMS = 50;   // 영수증 한 장에 넣을 수 있는 물품 수
+
+  /* ---------- 작은 도구들 ---------- */
+  function $(sel) { return document.querySelector(sel); }
+
+  /* 사용자가 입력한 글자는 반드시 이 함수를 거쳐 화면에 넣습니다 (HTML로 해석되지 않게) */
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function toInt(v) {
+    if (typeof v === 'number') return isFinite(v) ? Math.max(0, Math.floor(v)) : 0;
+    var n = parseInt(String(v == null ? '' : v).replace(/[^0-9]/g, ''), 10);
+    return isFinite(n) ? n : 0;
+  }
+
+  function isISO(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && L.toISO(L.parseISO(s)) === s; }
+  function isTime(s) { return typeof s === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s); }
+  function uid() { return 'r' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); }
+
+  function yen(n) { return '¥' + Number(n).toLocaleString('en-US'); }
+  function mdw(iso) { var d = L.parseISO(iso); return (d.getMonth() + 1) + '.' + d.getDate() + '(' + WEEK[d.getDay()] + ')'; }
+  function ymd(iso) { var d = L.parseISO(iso); return d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate(); }
+  function hm(d) { return L.pad(d.getHours()) + ':' + L.pad(d.getMinutes()); }
+
+  /* 분을 '3시간', '1시간 30분'처럼 */
+  function span(min) {
+    var h = Math.floor(min / 60);
+    var m = min % 60;
+    if (!h) return m + '분';
+    return h + '시간' + (m ? ' ' + m + '분' : '');
+  }
+
+  function icon(name, size) {
+    var s = size || 22;
+    return '<svg class="ic" width="' + s + '" height="' + s + '" aria-hidden="true"><use href="#i-' + name + '"></use></svg>';
+  }
+
+  /* '{kiosk}' 같은 자리표시를 값으로 바꾸기 */
+  function fill(tpl, map) {
+    var out = tpl;
+    Object.keys(map).forEach(function (k) { out = out.split('{' + k + '}').join(String(map[k])); });
+    return out;
+  }
+
+  /* esc()와 같지만, 줄이 바뀌어도 쪼개지면 안 되는 말(시간대, 영문 이름)은 한 덩어리로 묶어 줍니다.
+     '06:00–21:00', '06:45–다음 날 01:30', 'Visit Japan Web', 'HAKATA FOOD HALL', 'Wi-Fi', 'J–M', '8%입니다' 같은 것 */
+  function nb(s) {
+    var text = String(s);
+    var re = /\d{1,2}:\d{2}\s?[–-]\s?(?:다음 날 )?\d{1,2}:\d{2}|\d+(?:\.\d+)?%[가-힣]*|[A-Za-z0-9][A-Za-z0-9-]*(?: [A-Za-z0-9][A-Za-z0-9-]*)+|[A-Za-z0-9]+(?:[–-][A-Za-z0-9]+)+/g;
+    var out = '';
+    var last = 0;
+    var m;
+    while ((m = re.exec(text)) !== null) {
+      out += esc(text.slice(last, m.index)) + '<span class="nb">' + esc(m[0]) + '</span>';
+      last = m.index + m[0].length;
+    }
+    return out + esc(text.slice(last));
+  }
+
+  function airportOf(id) {
+    for (var i = 0; i < D.airports.length; i++) if (D.airports[i].id === id) return D.airports[i];
+    return D.airports[0];
+  }
+
+  function methodLabel(id) {
+    for (var i = 0; i < D.methods.length; i++) if (D.methods[i].id === id) return D.methods[i].label;
+    return '';
+  }
+
+  function isEmbedded() {
+    try { return window.self !== window.top; } catch (e) { return true; }
+  }
+
+  /* ---------- 저장되는 데이터 ----------
+     state = { sample, trip: { airport, depDate, depTime, lead }, receipts: [...], checks: { 단계번호: true } }
+     trip.lead = 공항 도착 목표를 출발 몇 시간 전으로 할지 (0이면 자동)
+     영수증 한 장 = { id, store, date, mode, total(세금 포함), rate(10|8), method, fee, consumed, items }
+       mode 'total': 합계만 입력. 소비 여부는 consumed
+       mode 'items': 물품별 입력. items = [{ id, name, price(세금 포함), used(소비 여부) }], total은 물품 금액의 합 */
+  function sampleState() {
+    var today = L.toISO(new Date());
+    return cleanState({
+      sample: true,
+      trip: { airport: 'fuk', depDate: L.addDays(today, 2), depTime: '15:30', lead: 0 },
+      receipts: [
+        { id: 's1', store: '드럭스토어 텐진점', date: L.addDays(today, -1), mode: 'total', total: 16500, rate: 10, method: 'card', fee: 0, consumed: false },
+        {
+          id: 's2', store: '디스카운트숍 나카스점', date: L.addDays(today, -1), mode: 'items', rate: 8, method: 'card', fee: 0,
+          items: [
+            { id: 'a', name: '말차 초콜릿 4개 묶음', price: 2160, used: false },
+            { id: 'b', name: '과자 버라이어티 팩', price: 1080, used: true },
+            { id: 'c', name: '컵라면 6개 세트', price: 1944, used: false },
+            { id: 'd', name: '곤약 젤리 3봉', price: 1296, used: false },
+            { id: 'e', name: '드립 커피 세트', price: 3240, used: false },
+            { id: 'f', name: '녹차 티백', price: 4320, used: false }
+          ]
+        },
+        { id: 's3', store: '가전양판점 하카타역점', date: today, mode: 'total', total: 33000, rate: 10, method: 'cash', fee: 0, consumed: false }
+      ],
+      checks: {}
+    });
+  }
+
+  function emptyState() {
+    return { sample: false, trip: { airport: 'fuk', depDate: '', depTime: '12:00', lead: 0 }, receipts: [], checks: {} };
+  }
+
+  /* 저장소에서 읽은 값은 믿지 않고 형식을 다시 맞춥니다 */
+  function cleanItems(list) {
+    var out = [];
+    var seen = {};
+    (Array.isArray(list) ? list : []).slice(0, MAX_ITEMS).forEach(function (it) {
+      if (!it || typeof it !== 'object') return;
+      var price = Math.min(toInt(it.price), 99999999);
+      if (!price) return;
+      var id = String(it.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
+      if (!id || seen[id]) id = 'i' + out.length + uid();
+      seen[id] = true;
+      out.push({ id: id, name: String(it.name || '').trim().slice(0, 30) || '물품 ' + (out.length + 1), price: price, used: !!it.used });
+    });
+    return out;
+  }
+
+  function cleanReceipt(r) {
+    var items = r.mode === 'items' ? cleanItems(r.items) : [];
+    var out = {
+      id: String(r.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40) || uid(),
+      store: String(r.store || '').slice(0, 40),
+      date: isISO(r.date) ? r.date : L.toISO(new Date()),
+      mode: items.length ? 'items' : 'total',
+      total: Math.min(toInt(r.total), 99999999),
+      rate: +r.rate === 8 ? 8 : 10,
+      method: methodLabel(r.method) ? r.method : 'unknown',
+      fee: Math.min(toInt(r.fee), 99999999),
+      consumed: items.length ? false : !!r.consumed,
+      items: items
+    };
+    if (items.length) out.total = L.totalOf(out);
+    return out;
+  }
+
+  function cleanState(s) {
+    var trip = s.trip && typeof s.trip === 'object' ? s.trip : {};
+    var lead = Math.floor(+trip.lead || 0);
+    var out = {
+      sample: !!s.sample,
+      trip: {
+        airport: airportOf(trip.airport).id,
+        depDate: isISO(trip.depDate) ? trip.depDate : '',
+        depTime: isTime(trip.depTime) ? trip.depTime : '12:00',
+        lead: lead >= A.baseHours && lead <= A.maxHours ? lead : 0
+      },
+      receipts: [],
+      checks: {}
+    };
+    (Array.isArray(s.receipts) ? s.receipts : []).slice(0, 200).forEach(function (r) {
+      if (r && typeof r === 'object') out.receipts.push(cleanReceipt(r));
+    });
+    if (s.checks && typeof s.checks === 'object') {
+      D.checklist.forEach(function (_, i) { if (s.checks[i]) out.checks[i] = true; });
+    }
+    return out;
+  }
+
+  function read(key) {
+    try {
+      var raw = window.localStorage.getItem(key);
+      if (!raw) return null;
+      var s = JSON.parse(raw);
+      return s && typeof s === 'object' ? cleanState(s) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* 저장된 데이터 읽기. 앱 이름을 바꾸기 전에 직접 입력해 둔 여행이 있으면 그대로 이어서 씁니다
+     (예전 예시 데이터는 버리고 새 예시로 시작) */
+  function load() {
+    var s = read(STORE_KEY);
+    if (s) return s;
+    var old = read(OLD_STORE_KEY);
+    if (!old || old.sample) return null;
+    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(old)); } catch (e) { /* 저장이 막힌 환경 */ }
+    return old;
+  }
+
+  function save() {
+    try {
+      window.localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } catch (e) {
+      /* 저장이 막힌 환경에서는 이번 방문 동안만 유지됩니다 */
+    }
+  }
+
+  var state = load() || sampleState();
+
+  /* 화면 상태 (저장하지 않음) */
+  var ui = {
+    tab: 'home',
+    preview: 'auto',   // 시점 미리보기: auto / shop / eve / day / after
+    calMonth: '',      // 'YYYY-MM' (비어 있으면 이번 달)
+    calDay: '',
+    guideStep: 0,
+    depTab: 'steps',   // 출국 부가 메뉴: steps / result / signs
+    flip: false,
+    undo: null,
+    form: { editId: '', mode: 'total', items: [] },   // 영수증 입력 시트에서 작업 중인 내용
+    embedded: isEmbedded()
+  };
+  var toastTimer = 0;
+
+  /* 지금 시각. 시점 미리보기를 켜면 출국일 기준으로 꾸민 시각을 돌려줍니다 */
+  function now() {
+    var t = state.trip;
+    if (ui.preview === 'auto' || !t.depDate) return new Date();
+    var dep = L.at(t.depDate, t.depTime);
+    if (ui.preview === 'shop') return L.at(L.addDays(t.depDate, -2), '14:00');
+    if (ui.preview === 'eve') return L.at(L.addDays(t.depDate, -1), '20:00');
+    if (ui.preview === 'day') {
+      var d = L.arrivalPlan(t, state.receipts, D.rules, airportOf(t.airport)).at;
+      return L.toISO(d) === t.depDate ? d : new Date(dep.getTime() - 60000);
+    }
+    return L.at(L.addDays(t.depDate, 1), '10:00');
+  }
+
+  /* 화면을 그릴 때 필요한 계산 결과를 한 번에 모읍니다 */
+  function context() {
+    var n = now();
+    var trip = state.trip;
+    var airport = airportOf(trip.airport);
+    var views = state.receipts.map(function (r) { return { r: r, v: L.receiptView(r, D.rules, trip.depDate) }; });
+    views.sort(function (a, b) { return a.r.date < b.r.date ? -1 : a.r.date > b.r.date ? 1 : 0; });
+    return {
+      now: n,
+      todayISO: L.toISO(n),
+      trip: trip,
+      airport: airport,
+      phase: L.phaseOf(n, trip),
+      dlabel: trip.depDate ? L.dLabel(n, trip.depDate) : '',
+      views: views,
+      sum: L.summarize(state.receipts, D.rules, trip.depDate),
+      plan: L.arrivalPlan(trip, state.receipts, D.rules, airport),
+      rem: L.buildReminders(trip, state.receipts, D.rules, D.reminders, airport)
+    };
+  }
+
+  /* ---------- 화면: 홈 ---------- */
+  function remRow(r, past) {
+    return '<li class="row' + (past ? ' is-past' : '') + '"><span class="row-when">' + esc(mdw(L.toISO(r.at))) + '<br>' + hm(r.at) + (past ? ' 지남' : '') + '</span>' +
+      '<span class="row-main"><span class="row-title">' + nb(r.title) + '</span><span class="row-desc">' + nb(r.body) + '</span></span></li>';
+  }
+
+  function riskWhy(list) {
+    var consumed = list.some(function (x) { return x.v.status === 'consumed'; });
+    var late = list.some(function (x) { return x.v.status === 'late'; });
+    return (consumed ? '먹었거나 없는 물건이 있습니다. 공항에서 키오스크 대신 세관 직원에게 먼저 말하세요.' : '') +
+      (consumed && late ? ' ' : '') +
+      (late ? '출국일이 출국 기한보다 늦은 영수증이 있습니다.' : '');
+  }
+
+  function viewHome(c) {
+    var P = D.phases[c.phase];
+    var s = c.sum;
+    var h = [];
+
+    if (state.sample) {
+      h.push('<div class="sample"><span>예시 여행으로 둘러보는 중입니다.</span>' +
+        '<button type="button" class="btn-text" data-act="startMine" data-key="startMine">내 여행으로 시작</button></div>');
+    }
+
+    /* 안내판: 지금 시점에 할 일 하나 */
+    h.push('<section class="board' + (ui.flip ? ' is-flip' : '') + '" aria-labelledby="board-title">' +
+      '<div class="board-top"><span class="chip chip-sign">' + esc(P.chip) + '</span>' +
+      (c.dlabel ? '<span class="dday disp">' + esc(c.dlabel) + '</span>' : '') + '</div>' +
+      '<div class="board-main"><span class="picto">' + icon(P.picto, 30) + '</span>' +
+      '<div class="board-copy"><h1 class="board-title disp" id="board-title">' + esc(P.title) + '</h1>' +
+      '<p class="board-body">' + esc(P.body) + '</p>' +
+      (c.phase === 'day' ? '<p class="board-where">' + icon('pin', 18) + '<span>' + nb(c.airport.kiosk) + '</span></p>' : '') +
+      '</div></div>' +
+      (c.trip.depDate
+        ? '<div class="board-trip"><div><b>' + esc(c.airport.name) + '</b><span>' + esc(mdw(c.trip.depDate) + ' ' + c.trip.depTime) + ' 출발</span></div>' +
+          '<button type="button" class="iconbtn iconbtn-action" data-act="trip" data-key="board-trip" aria-label="여행 정보 변경" title="여행 정보 변경">' + icon('pen', 20) + '</button></div>'
+        : '') +
+      '<button type="button" class="btn btn-sign btn-block" data-act="' + P.act + '" data-arg="' + (P.arg || '') + '" data-key="board-cta">' + esc(P.cta) + '</button>' +
+      '</section>');
+
+    /* 돌려받을 세금 */
+    h.push('<section class="sec" aria-labelledby="h-refund"><div class="sec-head"><h2 class="sec-title disp" id="h-refund">돌려받을 세금</h2>' +
+      (s.count ? '<a class="link" href="#receipts" data-act="tab" data-arg="receipts">영수증 ' + s.count + '장 보기</a>' : '') + '</div>');
+    if (!s.count) {
+      h.push('<div class="panel"><p>아직 영수증이 없습니다. 면세로 산 영수증을 추가하면 환급액과 출국 기한을 계산해 드립니다.</p>' +
+        '<button type="button" class="btn btn-line" data-act="add" data-key="home-add">' + icon('plus', 18) + '영수증 추가</button></div>');
+    } else {
+      var risky = c.views.filter(function (x) { return x.v.status === 'consumed' || x.v.status === 'late'; });
+      h.push('<div class="panel">' +
+        '<div class="money-row"><span class="money">' + yen(s.refund) + '</span><span class="money-note">예상 금액입니다. 매장에 따라 수수료가 빠질 수 있습니다.</span></div>' +
+        (s.refund + s.risk > 0
+          ? '<div class="bar" role="img" aria-label="환급 가능 ' + yen(s.refund) + ', 환급 불가 위험 ' + yen(s.risk) + '">' +
+            (s.refund ? '<span class="bar-go" style="flex:' + s.refund + ' 1 0"></span>' : '') +
+            (s.risk ? '<span class="bar-risk" style="flex:' + s.risk + ' 1 0"></span>' : '') + '</div>'
+          : '') +
+        '<ul class="legend"><li><span class="key key-go"></span>환급 가능 ' + s.okCount + '장<b>' + yen(s.refund) + '</b></li>' +
+        (s.riskCount ? '<li><span class="key key-risk"></span>환급 불가 위험 ' + s.riskCount + '장<b>' + yen(s.risk) + '</b></li>' : '') + '</ul>' +
+        (risky.length
+          ? '<p class="note note-risk">' + icon('warn', 20) + '<span><span class="note-title">' + esc(risky.map(function (x) { return x.r.store; }).join(', ')) + '</span>' + riskWhy(risky) + '</span></p>'
+          : '') +
+        '</div>');
+    }
+    h.push('</section>');
+
+    /* 다가오는 일정 */
+    var upcoming = c.rem.filter(function (r) { return r.at.getTime() >= c.now.getTime(); }).slice(0, 3);
+    h.push('<section class="sec" aria-labelledby="h-next"><div class="sec-head"><h2 class="sec-title disp" id="h-next">다가오는 일정</h2>' +
+      '<a class="link" href="#calendar" data-act="tab" data-arg="calendar">캘린더 보기</a></div>' +
+      (upcoming.length
+        ? '<ul class="rows">' + upcoming.map(function (r) { return remRow(r, false); }).join('') + '</ul>'
+        : '<div class="panel"><p>' + (c.trip.depDate ? '남은 일정이 없습니다.' : '출국일을 입력하면 일정을 계산합니다.') + '</p></div>') +
+      '</section>');
+
+    /* 시점 미리보기 (테스트용) */
+    if (c.trip.depDate) {
+      h.push('<section class="sec" aria-labelledby="h-preview"><div class="sec-head"><h2 class="sec-title disp" id="h-preview">시점 미리보기</h2></div>' +
+        '<p class="lede">테스트용 화면입니다. 여행 시점을 바꿔서 확인할 수 있습니다.</p>' +
+        '<div class="seg" role="group" aria-labelledby="h-preview">' + PREVIEWS.map(function (p) {
+          return '<button type="button" data-act="preview" data-arg="' + p[0] + '" data-key="pv-' + p[0] + '" aria-pressed="' + (ui.preview === p[0]) + '">' + p[1] + '</button>';
+        }).join('') + '</div></section>');
+    }
+    return h.join('');
+  }
+
+  /* ---------- 화면: 영수증 ---------- */
+  function line(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
+
+  /* 물품별로 입력한 영수증의 물품 한 줄. 체크하면 '먹었거나 써서 없음' */
+  function itemRow(r, it) {
+    var key = 'used-' + r.id + '-' + it.id;
+    return '<li><label class="item" for="' + key + '">' +
+      '<input type="checkbox" id="' + key + '" data-change="itemUsed" data-arg="' + r.id + ':' + it.id + '" data-key="' + key + '"' + (it.used ? ' checked' : '') + '>' +
+      '<span class="item-name"><span class="sr">먹었거나 써서 없음: </span><span class="item-text">' + esc(it.name) + '</span>' +
+      (it.used ? '<span class="chip chip-risk">소비</span>' : '') + '</span>' +
+      '<span class="item-price">' + yen(it.price) + '</span></label></li>';
+  }
+
+  function slip(r, v, c) {
+    var ok = v.status === 'ok';
+    var itemized = r.mode === 'items';
+    var left = L.diffDays(c.todayISO, v.due);
+    var msg = v.status === 'consumed' ? '먹었거나 없는 물건이 있어서 이 영수증은 통째로 환급이 안 됩니다. 공항에서는 키오스크 대신 세관 직원에게 먼저 말하세요.'
+      : v.status === 'late' ? '출국일이 이 영수증의 출국 기한보다 늦습니다. 기한 안에 출국해야 환급받을 수 있습니다.'
+      : v.status === 'under' ? '세전 ' + yen(D.rules.minPreTax) + ' 미만이라 면세 대상이 아닙니다.'
+      : '';
+    return '<article class="slip-wrap" aria-label="' + esc(r.store) + ' 영수증"><div class="slip">' +
+      '<div class="slip-head"><div><h2 class="slip-store">' + esc(r.store) + '</h2><p class="slip-date">' + esc(mdw(r.date)) + ' 구매' + (itemized ? ', 물품 ' + v.count + '개' : '') + '</p></div>' +
+      '<span class="stamp disp ' + (ok ? 'is-ok' : 'is-no') + '">' + (ok ? '환급 가능' : '환급 불가') + '</span></div>' +
+      (itemized
+        ? '<div class="items"><p class="items-head" id="items-' + r.id + '">먹었거나 쓴 물건에 체크하세요</p>' +
+          '<ul aria-labelledby="items-' + r.id + '">' + r.items.map(function (it) { return itemRow(r, it); }).join('') + '</ul></div>'
+        : '') +
+      '<dl class="slip-lines">' +
+      line('결제 금액', yen(v.total)) +
+      line('세전 금액', yen(v.pre)) +
+      (v.fee ? line('환급 수수료', '−' + yen(v.fee)) : '') +
+      line('환급 방법', esc(methodLabel(r.method))) +
+      line('출국 기한', ymd(v.due) + (left >= 0 ? ' (D-' + left + ')' : ' (지남)')) +
+      '<div class="is-total' + (ok ? '' : ' is-void') + '"><dt>환급 예상</dt><dd>' + yen(v.net) + '</dd></div>' +
+      '</dl>' +
+      (msg ? '<p class="slip-msg">' + msg + '</p>' : '') +
+      '<div class="slip-actions">' +
+      (itemized
+        ? '<span class="slip-count">' + (v.used ? '물품 ' + v.count + '개 가운데 ' + v.used + '개 소비' : '소비한 물건 없음') + '</span>'
+        : '<button type="button" class="btn btn-line btn-sm" data-act="consume" data-arg="' + r.id + '" data-key="consume-' + r.id + '" aria-pressed="' + !!r.consumed + '">' +
+          (r.consumed ? icon('check', 18) : '') + '물건 소비</button>') +
+      '<span class="slip-tools">' +
+      '<button type="button" class="iconbtn iconbtn-action" data-act="edit" data-arg="' + r.id + '" data-key="edit-' + r.id + '" aria-label="영수증 수정" title="영수증 수정">' + icon('pen', 20) + '</button>' +
+      '<button type="button" class="iconbtn iconbtn-action is-danger" data-act="del" data-arg="' + r.id + '" data-key="del-' + r.id + '" aria-label="영수증 삭제" title="영수증 삭제">' + icon('trash', 20) + '</button>' +
+      '</span></div></div></article>';
+  }
+
+  function viewReceipts(c) {
+    var h = [];
+    h.push('<div class="page-head"><div class="page-head-row"><h1 class="page-title disp">영수증</h1>' +
+      '<button type="button" class="btn btn-sign btn-sm" data-act="add" data-key="rc-add">' + icon('plus', 18) + '영수증 추가</button></div>' +
+      '<p class="lede">세관은 영수증 한 장을 한 묶음으로 확인합니다. 한 장에서 하나라도 없으면 그 영수증 전체를 환급받을 수 없습니다.</p></div>');
+    if (!c.views.length) {
+      h.push('<div class="panel"><p>아직 영수증이 없습니다. 면세로 살 때마다 추가해 두면 환급액과 출국 기한을 계산해 드립니다.</p></div>');
+    } else {
+      h.push('<div class="slips">' + c.views.map(function (x) { return slip(x.r, x.v, c); }).join('') + '</div>');
+    }
+    return h.join('');
+  }
+
+  /* ---------- 화면: 캘린더 ---------- */
+  function eventsByDay(c) {
+    var map = {};
+    function add(iso, kind, text) { (map[iso] = map[iso] || []).push({ kind: kind, text: text }); }
+    c.views.forEach(function (x) {
+      add(x.r.date, 'buy', '구매: ' + x.r.store + ' ' + yen(x.v.total));
+      if (x.v.status === 'ok' || x.v.status === 'late') add(x.v.due, 'due', '출국 기한: ' + x.r.store + ' 구매분');
+    });
+    if (c.trip.depDate) add(c.trip.depDate, 'dep', '출국: ' + c.trip.depTime + ' ' + c.airport.name);
+    c.rem.forEach(function (r) { add(L.toISO(r.at), 'remind', '알림 ' + hm(r.at) + ' ' + r.title); });
+    return map;
+  }
+
+  function viewCalendar(c) {
+    var month = ui.calMonth || c.todayISO.slice(0, 7);
+    var y = +month.slice(0, 4);
+    var m = +month.slice(5, 7);
+    var lead = new Date(y, m - 1, 1, 12).getDay();
+    var days = new Date(y, m, 0).getDate();
+    var ev = eventsByDay(c);
+    var selected = ui.calDay || (c.todayISO.slice(0, 7) === month ? c.todayISO : '');
+    var cells = [];
+    var i;
+    var d;
+
+    for (i = 0; i < lead; i++) cells.push('<span></span>');
+    for (d = 1; d <= days; d++) {
+      var iso = month + '-' + L.pad(d);
+      var list = ev[iso] || [];
+      var kinds = {};
+      for (i = 0; i < list.length; i++) kinds[list[i].kind] = true;
+      var marks = '';
+      if (kinds.buy) marks += '<i class="mk mk-buy"></i>';
+      if (kinds.remind) marks += '<i class="mk mk-remind"></i>';
+      if (kinds.due) marks += '<i class="mk mk-due"></i>';
+      var label = m + '월 ' + d + '일 ' + WEEK[(lead + d - 1) % 7] + '요일' + (iso === c.todayISO ? ', 오늘' : '') + (list.length ? ', 일정 ' + list.length + '개' : '');
+      cells.push('<button type="button" class="day' + (kinds.dep ? ' is-dep' : '') + (iso === c.todayISO ? ' is-today' : '') + '" data-act="calDay" data-arg="' + iso + '" data-key="day-' + iso + '" aria-pressed="' + (iso === selected) + '" aria-label="' + label + '">' +
+        '<span class="day-num">' + d + '</span><span class="marks">' + marks + '</span></button>');
+    }
+
+    var info;
+    if (!selected) {
+      info = '<p class="lede">날짜를 누르면 그날 일정을 볼 수 있습니다.</p>';
+    } else {
+      var sel = ev[selected] || [];
+      info = '<div class="panel"><h2 class="dayinfo-title">' + esc(mdw(selected)) + (selected === c.todayISO ? ' 오늘' : '') + '</h2>' +
+        (sel.length
+          ? '<ul class="dayinfo-list">' + sel.map(function (e) { return '<li><i class="mk mk-' + e.kind + '"></i><span>' + esc(e.text) + '</span></li>'; }).join('') + '</ul>'
+          : '<p class="lede">이날은 면세 일정이 없습니다.</p>') +
+        '</div>';
+    }
+
+    var due = c.sum.earliestDue;
+    var dueLeft = due ? L.diffDays(c.todayISO, due) : 0;
+    var h = [];
+    h.push('<div class="page-head"><h1 class="page-title disp">캘린더</h1><p class="lede">구매일, 출국일, 90일 출국 기한을 한눈에 볼 수 있습니다.</p></div>');
+    h.push('<section class="sec" aria-label="달력"><div class="cal">' +
+      '<div class="cal-nav"><button type="button" class="iconbtn" data-act="calPrev" data-key="cal-prev" aria-label="이전 달">' + icon('left') + '</button>' +
+      '<h2 class="cal-month disp">' + y + '년 ' + m + '월</h2>' +
+      '<button type="button" class="iconbtn" data-act="calNext" data-key="cal-next" aria-label="다음 달">' + icon('right') + '</button></div>' +
+      '<div class="cal-dow" aria-hidden="true">' + WEEK.map(function (w) { return '<span>' + w + '</span>'; }).join('') + '</div>' +
+      '<div class="cal-grid">' + cells.join('') + '</div>' +
+      '<ul class="cal-legend"><li><i class="mk mk-buy"></i>구매</li><li><i class="mk mk-dep"></i>출국일</li><li><i class="mk mk-remind"></i>알림</li><li><i class="mk mk-due"></i>출국 기한</li></ul>' +
+      '</div>' + info + '</section>');
+
+    h.push('<section class="sec" aria-labelledby="h-due"><div class="sec-head"><h2 class="sec-title disp" id="h-due">90일 출국 기한</h2></div>' +
+      (due
+        ? '<div class="panel"><div class="money-row"><span class="money disp">' + ymd(due) + '</span><span class="chip chip-sign">' + (dueLeft >= 0 ? 'D-' + dueLeft : '지남') + '</span></div>' +
+          '<p class="lede">가장 먼저 산 영수증 기준입니다. 구매 다음 날부터 세어 90일째까지 출국해야 환급받을 수 있습니다.</p>' +
+          '<button type="button" class="btn btn-line btn-sm" data-act="calGo" data-arg="' + due + '" data-key="cal-go">기한 날짜 보기</button></div>'
+        : '<div class="panel"><p>영수증을 추가하면 출국 기한을 계산합니다.</p></div>') +
+      '</section>');
+
+    h.push('<section class="sec" aria-labelledby="h-rem"><div class="sec-head"><h2 class="sec-title disp" id="h-rem">알림 일정</h2></div>');
+    if (c.rem.length) {
+      h.push('<ul class="rows">' + c.rem.map(function (r) { return remRow(r, r.at.getTime() < c.now.getTime()); }).join('') + '</ul>' +
+        (ui.embedded
+          ? '<button type="button" class="btn btn-line" data-act="exportRem" data-key="export">' + icon('copy', 18) + '알림 일정 복사</button>'
+          : '<button type="button" class="btn btn-line" data-act="exportRem" data-key="export">' + icon('cal', 18) + '캘린더 파일로 저장</button>' +
+            '<p class="lede">저장한 파일을 열어 휴대폰 캘린더에 추가하면 앱을 닫아도 그 시각에 알림이 울립니다.</p>'));
+    } else {
+      h.push('<div class="panel"><p>출국일을 입력하면 알림 일정을 계산합니다.</p></div>');
+    }
+    h.push('</section>');
+    return h.join('');
+  }
+
+  /* ---------- 화면: 출국 ---------- */
+  /* 키오스크 안내판 안의 안내 한 덩어리.
+     제목 줄(아이콘, 이름, 상태 칩) → 한 줄 답 → 시간·대수 칩 → 덧붙임 문장 순서로 쌓아서
+     문장 하나에 장소, 시간, 조건이 뒤섞이지 않게 합니다. */
+  function infoBlock(ic, label, raw, status) {
+    var p = L.splitInfo(raw);
+    return '<li class="info"><div class="info-head">' + icon(ic, 20) + '<h3 class="info-label">' + esc(label) + '</h3>' +
+      (status ? '<span class="chip chip-ok">' + esc(status) + '</span>' : '') + '</div>' +
+      '<p class="info-main">' + nb(p.text) + '</p>' +
+      (p.meta.length ? '<ul class="info-meta">' + p.meta.map(function (t) { return '<li class="chip chip-dark">' + nb(t) + '</li>'; }).join('') + '</ul>' : '') +
+      (p.extra ? '<p class="info-extra">' + nb(p.extra) + '</p>' : '') +
+      '</li>';
+  }
+
+  /* 안내판 칩 글자: 숫자가 있는 값은 '키오스크 12대', '운영 06:00–21:00'처럼,
+     모르는 값은 '운영 시간: 공항 안내 확인'처럼 무엇을 확인하라는 건지 이름을 붙입니다 */
+  function specChip(label, longLabel, v) {
+    return /\d/.test(v) ? label + ' ' + v : longLabel + ': ' + v;
+  }
+
+  function timeBlock(cls, label, d, extra) {
+    return '<div class="time ' + cls + '"><span class="time-label">' + label + '</span>' +
+      '<span class="time-num disp">' + hm(d) + '</span>' +
+      '<span class="time-date">' + esc(mdw(L.toISO(d))) + (extra || '') + '</span></div>';
+  }
+
+  /* 공항 도착 목표를 왜 그 시간으로 잡았는지 */
+  function planNotes(p, a) {
+    var rows = [];
+    var h = '';
+    if (p.auto) {
+      rows.push(['기본', '보통은 출발 ' + A.baseHours + '시간 전을 권합니다.', false]);
+      if (p.busy) rows.push(['+1시간', (p.busy === 'weekend' ? '주말 출발이라' : esc(p.busy) + ' 기간이라') + ' 공항이 붐빌 수 있습니다.', true]);
+      if (p.many) rows.push(['+1시간', (p.receipts >= A.manyReceipts ? '면세 영수증이 ' + p.receipts + '장이라' : '면세품이 ' + p.items + '개라') + ' 세관 확인에 시간이 더 걸릴 수 있습니다.', true]);
+      h += '<ul class="why">' + rows.map(function (r) {
+        return '<li><span class="why-tag' + (r[2] ? ' is-add' : '') + '">' + r[0] + '</span><span>' + r[1] + '</span></li>';
+      }).join('') + '</ul>';
+      if (!p.busy && !p.many) {
+        h += '<p class="lede">주말이나 일본 연휴에 출발하거나 면세품이 많으면 1시간씩, 최대 ' + A.maxHours + '시간 전까지 자동으로 앞당깁니다.</p>';
+      }
+    } else {
+      h += '<p class="lede">직접 고른 시간입니다. 자동을 누르면 출국일과 면세품 수에 맞춰 계산됩니다.</p>';
+    }
+    if (p.clamped) {
+      h += '<p class="note note-sign">' + icon('warn', 20) + '<span><span class="note-title">키오스크가 ' + esc(a.open) + '에 엽니다</span>더 일찍 가도 면세 절차를 시작할 수 없어서, 목표를 키오스크가 여는 시각에 맞췄습니다.</span></p>';
+    } else if (p.hours > A.baseHours) {
+      h += '<p class="lede">체크인 카운터는 보통 출발 2~3시간 전에 엽니다.</p>';
+    }
+    return h;
+  }
+
+  function viewDeparture(c) {
+    var a = c.airport;
+    var p = c.plan;
+    var h = [];
+    var done = 0;
+
+    h.push('<div class="page-head"><h1 class="page-title disp">출국</h1><p class="lede">짐을 맡기기 전에 키오스크부터 가세요.</p></div>');
+
+    h.push('<div class="field airport-field"><label for="dep-airport">출국 공항·항구</label>' +
+      '<select class="input" id="dep-airport" data-change="airport" data-key="dep-airport">' +
+      D.airports.map(function (x) { return '<option value="' + x.id + '"' + (x.id === a.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') +
+      '</select></div>');
+
+    /* 출발 시각과 공항 도착 목표 */
+    h.push('<section class="sec" aria-labelledby="h-times"><div class="sec-head"><h2 class="sec-title disp" id="h-times">공항 도착 목표</h2>' +
+      '<button type="button" class="btn-text" data-act="trip" data-key="dep-trip">' + (p ? '출발 시각 변경' : '여행 정보 입력') + '</button></div>');
+    if (!p) {
+      h.push('<div class="panel"><p>출국일과 출발 시각을 입력하면 공항에 언제까지 도착하면 좋은지 계산합니다.</p></div>');
+    } else {
+      var leads = [[0, '자동']];
+      for (var hh = A.baseHours; hh <= A.maxHours; hh++) leads.push([hh, hh + '시간 전']);
+      h.push('<div class="panel">' +
+        '<div class="times">' +
+        timeBlock('is-goal', '<span class="chip chip-sign">공항 도착 목표</span>', p.at, '<span class="sr">, 출발 ' + span(p.leadMin) + ' 전</span>') +
+        '<div class="time-gap" aria-hidden="true"><span>' + span(p.leadMin) + '</span><i></i></div>' +
+        timeBlock('is-dep', a.ship ? '배 출발' : '비행기 출발', p.dep, '') +
+        '</div>' +
+        '<div class="seg" role="group" aria-label="공항 도착 목표 정하기">' + leads.map(function (x) {
+          return '<button type="button" data-act="lead" data-arg="' + x[0] + '" data-key="lead-' + x[0] + '" aria-pressed="' + ((c.trip.lead || 0) === x[0]) + '">' + x[1] + '</button>';
+        }).join('') + '</div>' +
+        planNotes(p, a) +
+        '</div>');
+    }
+    h.push('</section>');
+
+    /* 키오스크 위치 안내판: 아래 안내는 휴대폰 판정 → RED일 때 → 현금 환급 순서로 한 덩어리씩 */
+    var spec = a.hours === a.count
+      ? [specChip('', '대수·운영 시간', a.count)]
+      : [specChip('키오스크', '키오스크 대수', a.count), specChip('운영', '운영 시간', a.hours)];
+    h.push('<section class="board" aria-label="면세 키오스크 위치">' +
+      '<div class="kiosk-sign"><span class="picto">' + icon('kiosk', 30) + '</span>' +
+      '<div><p class="kiosk-ja" lang="ja">免税手続 TAX REFUND</p><p class="kiosk-ko">면세 절차 키오스크</p></div></div>' +
+      '<p class="kiosk-where disp">' + nb(a.kiosk) + '</p>' +
+      '<ul class="kiosk-spec" aria-label="키오스크 대수와 운영 시간">' + spec.map(function (t) { return '<li class="chip chip-dark">' + nb(t) + '</li>'; }).join('') + '</ul>' +
+      '<ul class="infos">' +
+      (a.vjw ? infoBlock('wifi', '휴대폰 판정', '출발 로비의 전용 Wi-Fi에서 Visit Japan Web으로', '가능') : '') +
+      infoBlock('search', 'RED일 때', a.red) +
+      infoBlock('yen', '현금 환급', a.cash) +
+      '</ul>' +
+      (a.note ? '<p class="board-note"><b>참고</b>' + nb(a.note) + '</p>' : '') +
+      '<a class="board-src" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer">출처: ' + esc(a.src) + ', ' + esc(D.checkedAt) + ' 확인' + icon('ext', 14) + '</a>' +
+      '</section>');
+
+    var bad = c.views.filter(function (x) { return x.v.status === 'consumed'; });
+    if (bad.length) {
+      h.push('<p class="note note-risk">' + icon('warn', 20) + '<span><span class="note-title">세관 직원에게 먼저 말할 영수증 ' + bad.length + '장</span>' +
+        esc(bad.map(function (x) { return x.r.store; }).join(', ')) + '에 먹었거나 없는 물건이 있습니다. 키오스크 대신 세관 직원에게 먼저 말하세요.</span></p>');
+    }
+
+    /* 아래 세 가지(체크리스트, 키오스크 결과, 표지판)는 부가 메뉴로 하나씩만 보여 줍니다 */
+    var panels = {};
+
+    /* 체크리스트 */
+    var arriveText = p
+      ? hm(p.at) + '까지 공항에 도착합니다. 출발 ' + span(p.leadMin) + ' 전입니다.'
+      : '출발 ' + A.baseHours + '시간 전을 목표로 여유 있게 도착합니다.';
+    var steps = D.checklist.map(function (st, i) {
+      var on = !!state.checks[i];
+      if (on) done += 1;
+      var desc = fill(st.desc, {
+        arrive: arriveText,
+        kiosk: a.kiosk + (a.vjw ? '. 붐비면 Visit Japan Web으로도 됩니다.' : ''),
+        red: a.red,
+        cash: a.cash
+      });
+      return '<li class="step"><input type="checkbox" id="chk-' + i + '" data-change="check" data-arg="' + i + '" data-key="chk-' + i + '"' + (on ? ' checked' : '') + '>' +
+        '<label for="chk-' + i + '"><span class="step-title"><span class="step-name">' + esc(st.title) + '</span>' +
+        (st.key ? '<span class="chip chip-sign">핵심</span>' : '') +
+        (st.only ? '<span class="chip chip-ghost">' + esc(st.only) + '</span>' : '') +
+        '</span><span class="step-desc">' + nb(desc) + '</span></label></li>';
+    });
+    panels.steps = ('<section class="sec" aria-label="출국일 체크리스트"><div class="sec-head is-end">' +
+      '<span class="sec-side num">' + done + '/' + D.checklist.length + ' 완료</span></div>' +
+      '<ol class="steps">' + steps.join('') + '</ol>' +
+      (done ? '<button type="button" class="btn-text" data-act="clearChecks" data-key="clear-checks">체크 모두 지우기</button>' : '') +
+      '</section>');
+
+    /* 키오스크 결과: GREEN과 RED를 함께 보여 줍니다 */
+    panels.result = ('<section class="sec" aria-label="키오스크 결과">' +
+      '<div class="result result-green">' + icon('check', 26) + '<p><b>GREEN이 나오면 세관 확인 끝</b><span>바로 체크인하러 가세요. 환급은 구매한 매장(환급 대행사)이 진행합니다.</span></p></div>' +
+      '<div class="result result-red">' + icon('search', 26) + '<p><b>RED가 나오면 세관 확인</b><span>' + nb(a.red) + '</span><span>확인이 끝나면 체크인하세요.</span></p></div>' +
+      '</section>');
+
+    /* 표지판 일본어 */
+    panels.signs = ('<section class="sec" aria-label="공항 표지판 읽기">' +
+      '<ul class="signs">' + D.signs.map(function (w) {
+        return '<li class="signword"><span class="signword-ja" lang="ja">' + esc(w.ja) + '</span><span class="signword-yomi" lang="ja">' + esc(w.yomi) + '</span>' +
+          '<span class="signword-ko">' + esc(w.ko) + '</span><span class="signword-hun">' + esc(w.hun) + '</span></li>';
+      }).join('') + '</ul></section>');
+
+    /* 부가 메뉴: 누른 항목 하나만 아래에 펼쳐요 */
+    h.push('<div class="sec">' +
+      '<div class="seg seg-sub" role="group" aria-label="출국 부가 메뉴">' + DEP_TABS.map(function (x) {
+        return '<button type="button" data-act="depTab" data-arg="' + x[0] + '" data-key="dep-sub-' + x[0] + '" aria-pressed="' + (ui.depTab === x[0]) + '">' + x[1] + '</button>';
+      }).join('') + '</div>' +
+      (panels[ui.depTab] || panels.steps) + '</div>');
+
+    return h.join('');
+  }
+
+  /* ---------- 화면: 가이드 ---------- */
+
+  /* 면세 QR 만들기 안내판: Visit Japan Web 바로가기 */
+  function qrBoard() {
+    var q = D.qr;
+    return '<section class="board qr" aria-labelledby="h-qr">' +
+      '<div class="kiosk-sign"><span class="picto">' + icon('qr', 30) + '</span>' +
+      '<div><h3 class="qr-title disp" id="h-qr">' + esc(q.title) + '</h3><p class="kiosk-ko">' + esc(q.sub) + '</p></div></div>' +
+      '<ol class="qr-steps">' + q.steps.map(function (s) { return '<li><span>' + nb(s) + '</span></li>'; }).join('') + '</ol>' +
+      '<a class="btn btn-sign btn-block" href="' + esc(q.url) + '" target="_blank" rel="noopener noreferrer" data-key="qr-cta">' + esc(q.cta) + icon('ext', 18) + '</a>' +
+      '<p class="qr-host">' + esc(q.host) + '</p>' +
+      '<ul class="qr-notes">' + q.notes.map(function (n) { return '<li>' + nb(n) + '</li>'; }).join('') + '</ul>' +
+      '</section>';
+  }
+
+  function viewGuide() {
+    var g = D.guide[ui.guideStep] || D.guide[0];
+    var next = D.guide[ui.guideStep + 1];
+    var h = [];
+
+    h.push('<div class="page-head"><h1 class="page-title disp">절차 가이드</h1>' +
+      '<p class="lede">2026년 11월 1일 구매분부터는 살 때 세금까지 내고, 출국할 때 확인을 받은 뒤 돌려받습니다.</p></div>');
+
+    h.push('<section class="sec" aria-labelledby="h-guide">' +
+      '<div class="seg" role="group" aria-label="절차 단계">' + D.guide.map(function (x, i) {
+        return '<button type="button" data-act="guide" data-arg="' + i + '" data-key="guide-' + i + '" aria-pressed="' + (i === ui.guideStep) + '">' + (i + 1) + ' ' + esc(x.tab) + '</button>';
+      }).join('') + '</div>' +
+      '<div class="sec-head"><h2 class="sec-title disp" id="h-guide">' + esc(g.title) + '</h2></div>' +
+      (g.qr ? qrBoard() : '') +
+      '<ul class="guide-list">' + g.items.map(function (it) {
+        return '<li class="guide-item"><span class="guide-ic">' + icon(it.icon, 20) + '</span><div class="guide-text"><h3>' + esc(it.title) + '</h3><p>' + nb(it.desc) + '</p>' +
+          (it.link ? '<a class="link" href="' + esc(it.link.url) + '" target="_blank" rel="noopener noreferrer">' + esc(it.link.label) + icon('ext', 14) + '</a>' : '') +
+          '</div></li>';
+      }).join('') + '</ul>' +
+      (g.tip ? '<p class="note note-' + g.tip.tone + '">' + icon('warn', 20) + '<span><span class="note-title">' + esc(g.tip.title) + '</span>' + nb(g.tip.desc) + '</span></p>' : '') +
+      (next ? '<div class="guide-nav"><button type="button" class="arrowbtn" data-act="guideNext" data-arg="' + (ui.guideStep + 1) + '" data-key="guide-next">' +
+        icon('arrow', 24) + '<span class="sr">다음: ' + esc(next.title) + '</span></button></div>' : '') +
+      '</section>');
+
+    h.push('<section class="sec" aria-labelledby="h-allow"><div class="sec-head"><h2 class="sec-title disp" id="h-allow">한국에 들어올 때 면세한도</h2></div>' +
+      '<div class="panel"><dl class="allow">' + D.allowance.map(function (x) { return '<div><dt>' + esc(x.label) + '</dt><dd>' + esc(x.value) + '</dd></div>'; }).join('') + '</dl>' +
+      '<p class="lede">1인 기준입니다.</p></div></section>');
+
+    h.push('<section class="sec" aria-labelledby="h-src"><div class="sec-head"><h2 class="sec-title disp" id="h-src">근거 자료</h2><span class="sec-side">' + esc(D.sourcesCheckedAt) + ' 확인</span></div>' +
+      '<ul class="sources">' + D.sources.map(function (x) {
+        return '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer">' + esc(x.label) + icon('ext', 14) + '</a></li>';
+      }).join('') + '</ul></section>');
+
+    return h.join('');
+  }
+
+  var VIEWS = { home: viewHome, receipts: viewReceipts, calendar: viewCalendar, departure: viewDeparture, guide: viewGuide };
+
+  /* ---------- 그리기 ---------- */
+  function renderChrome(c) {
+    $('#tripchip').innerHTML = c.trip.depDate
+      ? '<span class="sr">여행 정보 </span>' + esc(c.airport.short) + ' <span class="num">' + esc(c.dlabel) + '</span>'
+      : '여행 정보 입력';
+
+    var bar = $('#previewbar');
+    if (ui.preview === 'auto' || !c.trip.depDate) {
+      bar.hidden = true;
+    } else {
+      bar.hidden = false;
+      $('#previewtext').textContent = '미리보기: ' + D.phases[ui.preview].chip + ' 시점의 화면';
+    }
+
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute('data-arg') === ui.tab) tabs[i].setAttribute('aria-current', 'page');
+      else tabs[i].removeAttribute('aria-current');
+    }
+  }
+
+  function render() {
+    var active = document.activeElement;
+    var key = active && active.getAttribute ? active.getAttribute('data-key') : '';
+    var c = context();
+    $('#view').innerHTML = VIEWS[ui.tab](c);
+    renderChrome(c);
+    if (key) {
+      /* 다시 그린 뒤에도 방금 누른 버튼에 포커스가 남게 */
+      var again = document.querySelector('[data-key="' + key + '"]');
+      if (again && again !== document.activeElement) {
+        try { again.focus({ preventScroll: true }); } catch (e) { again.focus(); }
+      }
+    }
+  }
+
+  function tabFromHash() {
+    var h = String(window.location.hash || '').replace('#', '');
+    return TABS.indexOf(h) >= 0 ? h : '';
+  }
+
+  function go(tab, fromHash) {
+    if (TABS.indexOf(tab) < 0) tab = 'home';
+    var view = $('#view');
+    var inside = view.contains(document.activeElement);
+    ui.tab = tab;
+    if (!fromHash) {
+      try {
+        if (window.location.hash !== '#' + tab) window.location.hash = tab;
+      } catch (e) {
+        /* 주소를 바꿀 수 없는 환경에서는 화면만 바꿉니다 */
+      }
+    }
+    render();
+    view.scrollTop = 0;
+    if (inside && !view.contains(document.activeElement)) {
+      try { view.focus({ preventScroll: true }); } catch (e) { view.focus(); }
+    }
+  }
+
+  function toast(text, label, act) {
+    var t = $('#toast');
+    t.innerHTML = '<span>' + esc(text) + '</span>' +
+      (label ? '<button type="button" class="btn-text" data-act="' + act + '">' + esc(label) + '</button>' : '');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () { t.innerHTML = ''; }, label ? 7000 : 3200);
+  }
+
+  /* ---------- 입력 시트 공통 ---------- */
+  function openDlg(d) {
+    try {
+      if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+    } catch (e) {
+      d.setAttribute('open', '');
+    }
+  }
+
+  function closeDlg(d) {
+    if (!d) return;
+    try {
+      if (typeof d.close === 'function') d.close(); else d.removeAttribute('open');
+    } catch (e) {
+      d.removeAttribute('open');
+    }
+  }
+
+  function fail(msgEl, text, focusSel) {
+    msgEl.textContent = text;
+    var el = $(focusSel);
+    if (el) el.focus();
+    return false;
+  }
+
+  function indexOfReceipt(id) {
+    for (var i = 0; i < state.receipts.length; i++) if (state.receipts[i].id === id) return i;
+    return -1;
+  }
+
+  /* ---------- 영수증 입력 시트 (추가·수정) ----------
+     ui.form에 지금 시트에서 작업 중인 내용을 둡니다.
+     editId가 있으면 그 영수증을 수정하고, 없으면 새로 추가합니다.
+     물품 금액(price)은 입력한 글자 그대로 들고 있다가 저장할 때 숫자로 바꿉니다. */
+  function blankItem() { return { id: uid(), name: '', price: '', used: false }; }
+
+  /* 시트에 지금 들어 있는 결제 금액 (물품별 입력이면 물품 금액의 합) */
+  function formTotal() {
+    if (ui.form.mode !== 'items') return toInt($('#r-total').value);
+    var sum = 0;
+    ui.form.items.forEach(function (it) { sum += toInt(it.price); });
+    return sum;
+  }
+
+  function renderFormItems() {
+    $('#r-items').innerHTML = ui.form.items.map(function (it, i) {
+      var n = i + 1;
+      return '<li class="item-row">' +
+        '<input class="input" id="it-name-' + i + '" data-item="' + i + '" data-field="name" type="text" maxlength="30" autocomplete="off" placeholder="물품 이름" aria-label="물품 ' + n + ' 이름" value="' + esc(it.name) + '">' +
+        '<input class="input num" id="it-price-' + i + '" data-item="' + i + '" data-field="price" type="text" inputmode="numeric" autocomplete="off" placeholder="금액" aria-label="물품 ' + n + ' 금액" value="' + esc(it.price) + '">' +
+        '<button type="button" class="iconbtn" data-act="formDelItem" data-arg="' + i + '" aria-label="물품 ' + n + ' 삭제">' + icon('close', 20) + '</button></li>';
+    }).join('');
+    $('#r-add-item').hidden = ui.form.items.length >= MAX_ITEMS;
+  }
+
+  /* 입력 방식(합계만 / 물품별)과 추가·수정에 맞춰 시트의 겉모습을 맞춥니다 */
+  function syncForm() {
+    var itemsMode = ui.form.mode === 'items';
+    $('#r-total-field').hidden = itemsMode;
+    $('#r-items-field').hidden = !itemsMode;
+    $('#r-mode-total').setAttribute('aria-pressed', String(!itemsMode));
+    $('#r-mode-items').setAttribute('aria-pressed', String(itemsMode));
+    $('#dlg-receipt-title').textContent = ui.form.editId ? '영수증 수정' : '영수증 추가';
+    $('#r-submit').textContent = ui.form.editId ? '수정 저장' : '영수증 저장';
+  }
+
+  /* 금액을 넣는 동안 면세 대상인지 바로 계산해서 보여 줍니다 */
+  function updateCalc() {
+    var itemsMode = ui.form.mode === 'items';
+    var total = formTotal();
+    var rate = +$('#r-rate').value === 8 ? 8 : 10;
+    var date = $('#r-date').value;
+    var box = $('#r-calc');
+    if (itemsMode) $('#r-items-sum').textContent = '합계 ' + yen(total);
+    if (!total) {
+      box.innerHTML = '<p class="calc-sub">' + (itemsMode ? '물품 금액을 넣으면' : '금액을 넣으면') + ' 면세 대상인지 바로 계산합니다.</p>';
+      return;
+    }
+    var v = L.receiptView({ total: total, rate: rate, fee: toInt($('#r-fee').value), date: isISO(date) ? date : L.toISO(new Date()), consumed: false }, D.rules, '');
+    if (!v.eligible) {
+      var pct = Math.min(100, Math.round(v.pre * 100 / D.rules.minPreTax));
+      box.innerHTML = '<p><b>아직 면세 대상이 아닙니다.</b> 세전 ' + yen(v.pre) + '이라 ' + yen(D.rules.minPreTax - v.pre) + ' 더 담아야 합니다.</p>' +
+        '<div class="meter"><span style="width:' + pct + '%"></span></div>';
+    } else {
+      box.innerHTML = '<p>환급 예상<b class="calc-big">' + yen(v.net) + '</b></p>' +
+        '<p class="calc-sub">세전 ' + yen(v.pre) + ', 출국 기한 ' + ymd(v.due) + '까지</p>' +
+        '<div class="meter is-ok"><span style="width:100%"></span></div>';
+    }
+  }
+
+  /* 스캔(OCR)을 붙일 때는 서버가 돌려준 결과를 이 함수에 넘기면 입력칸이 채워집니다.
+     data = { store: '매장 이름', date: 'YYYY-MM-DD', total: 세금 포함 합계, tax: 소비세,
+              items: [{ name: '물품 이름', price: 세금 포함 금액 }] }  (items가 있으면 물품별 입력으로 채움) */
+  function fillReceiptForm(data) {
+    if (!data) return;
+    if (data.store) $('#r-store').value = String(data.store).slice(0, 40);
+    if (isISO(data.date)) $('#r-date').value = data.date;
+    if (Array.isArray(data.items) && data.items.length) {
+      ui.form.mode = 'items';
+      ui.form.items = data.items.slice(0, MAX_ITEMS).map(function (it) {
+        var price = toInt(it && it.price);
+        return { id: uid(), name: String((it && it.name) || '').slice(0, 30), price: price ? String(price) : '', used: false };
+      });
+    } else if (data.total) {
+      ui.form.mode = 'total';
+      $('#r-total').value = String(toInt(data.total));
+    }
+    if (data.total && data.tax) {
+      /* 세액 비율이 8%에 가까우면 식품·음료로 봅니다 */
+      var ratio = toInt(data.tax) / Math.max(1, toInt(data.total) - toInt(data.tax));
+      $('#r-rate').value = ratio < 0.09 ? '8' : '10';
+    }
+    renderFormItems();
+    syncForm();
+    updateCalc();
+  }
+
+  /* id를 주면 그 영수증을 수정하는 시트, 없으면 새 영수증 시트 */
+  function openReceipt(id) {
+    var today = L.toISO(new Date());
+    var i = id ? indexOfReceipt(id) : -1;
+    var r = i >= 0 ? state.receipts[i] : null;
+    $('#form-receipt').reset();
+    $('#r-date').max = today;
+    $('#r-msg').textContent = '';
+    if (r) {
+      ui.form = {
+        editId: r.id,
+        mode: r.mode,
+        items: r.items.map(function (it) { return { id: it.id, name: it.name, price: String(it.price), used: it.used }; })
+      };
+      $('#r-store').value = r.store;
+      $('#r-date').value = r.date;
+      $('#r-rate').value = String(r.rate);
+      $('#r-total').value = String(r.total);
+      $('#r-method').value = r.method;
+      $('#r-fee').value = r.fee ? String(r.fee) : '';
+    } else {
+      ui.form = { editId: '', mode: 'total', items: [] };
+      $('#r-date').value = today;
+    }
+    renderFormItems();
+    syncForm();
+    updateCalc();
+    openDlg($('#dlg-receipt'));
+    if (!r) $('#r-store').focus();
+  }
+
+  function submitReceipt(e) {
+    e.preventDefault();
+    var f = ui.form;
+    var store = $('#r-store').value.trim();
+    var date = $('#r-date').value;
+    var rate = +$('#r-rate').value === 8 ? 8 : 10;
+    var msg = $('#r-msg');
+    var items = [];
+    var total = 0;
+    var i;
+
+    if (!store) return fail(msg, '매장 이름을 넣어 주세요.', '#r-store');
+    if (!isISO(date)) return fail(msg, '구매일을 골라 주세요.', '#r-date');
+    if (date > L.toISO(new Date())) return fail(msg, '구매일이 오늘보다 뒤입니다. 날짜를 확인해 주세요.', '#r-date');
+
+    if (f.mode === 'items') {
+      for (i = 0; i < f.items.length; i++) {
+        var name = String(f.items[i].name || '').trim();
+        var price = toInt(f.items[i].price);
+        if (!name && !price) continue;   // 빈 줄은 건너뜀
+        if (!price) return fail(msg, '‘' + name + '’의 금액을 숫자로 넣어 주세요.', '#it-price-' + i);
+        items.push({ id: f.items[i].id, name: name || '물품 ' + (items.length + 1), price: price, used: !!f.items[i].used });
+        total += price;
+      }
+      if (!items.length) return fail(msg, '물품을 하나 이상 넣어 주세요.', '#it-name-0');
+    } else {
+      total = toInt($('#r-total').value);
+      if (!total) return fail(msg, '결제 금액을 숫자로 넣어 주세요.', '#r-total');
+    }
+    if (L.preTaxOf(total, rate) < D.rules.minPreTax) {
+      return fail(msg, '세전 ' + yen(D.rules.minPreTax) + ' 미만이라 면세 영수증으로 저장할 수 없습니다.', f.mode === 'items' ? '#r-add-item' : '#r-total');
+    }
+
+    var idx = f.editId ? indexOfReceipt(f.editId) : -1;
+    var old = idx >= 0 ? state.receipts[idx] : null;
+    /* 합계 방식으로 저장할 때의 소비 표시: 원래 표시를 그대로 잇습니다 */
+    var consumed = !!old && (old.mode === 'total' ? old.consumed : f.items.some(function (it) { return !!it.used; }));
+    var next = cleanReceipt({
+      id: old ? old.id : uid(),
+      store: store, date: date, mode: f.mode, total: total, rate: rate,
+      method: $('#r-method').value, fee: toInt($('#r-fee').value),
+      consumed: consumed, items: items
+    });
+    /* 합계 방식에서 소비로 표시해 둔 영수증을 물품별로 바꾸면 어느 물품인지 알 수 없어 표시가 풀립니다 */
+    var lost = !!old && old.mode === 'total' && old.consumed && next.mode === 'items';
+
+    if (old) state.receipts[idx] = next; else state.receipts.push(next);
+    save();
+    closeDlg($('#dlg-receipt'));
+    if (old && ui.tab === 'receipts') render(); else go('receipts');
+    toast(lost ? '수정한 내용을 저장했습니다. 먹었거나 쓴 물건은 물품에서 다시 체크해 주세요.'
+      : old ? '수정한 내용을 저장했습니다.' : '영수증을 저장했습니다.');
+    return true;
+  }
+
+  /* 물품 칸에 글자를 넣을 때마다 작업 중인 내용에 반영 */
+  function onFormInput(e) {
+    var el = e.target;
+    var idx = el && el.getAttribute ? el.getAttribute('data-item') : null;
+    if (idx !== null && ui.form.items[+idx]) {
+      ui.form.items[+idx][el.getAttribute('data-field') === 'price' ? 'price' : 'name'] = el.value;
+    }
+    updateCalc();
+  }
+
+  /* 물품 칸에서 Enter: 이름 → 금액 → 다음 줄(마지막 줄이면 새 줄)로 이동. 한글 조합 중에는 건드리지 않음 */
+  function onItemKey(e) {
+    if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;
+    var el = e.target;
+    var idx = el && el.getAttribute ? el.getAttribute('data-item') : null;
+    if (idx === null) return;
+    e.preventDefault();
+    var target;
+    if (el.getAttribute('data-field') === 'name') target = $('#it-price-' + idx);
+    else if (+idx < ui.form.items.length - 1) target = $('#it-name-' + (+idx + 1));
+    else { ACT.formAddItem(); return; }
+    if (target) target.focus();
+  }
+
+  /* ---------- 여행 정보 시트 ---------- */
+  function openTrip() {
+    $('#t-airport').value = state.trip.airport;
+    $('#t-date').value = state.trip.depDate;
+    $('#t-time').value = state.trip.depTime;
+    $('#t-msg').textContent = '';
+    openDlg($('#dlg-trip'));
+  }
+
+  function submitTrip(e) {
+    e.preventDefault();
+    var date = $('#t-date').value;
+    var time = $('#t-time').value;
+    var msg = $('#t-msg');
+    if (!isISO(date)) return fail(msg, '출국일을 골라 주세요.', '#t-date');
+    if (!isTime(time)) return fail(msg, '출발 시각을 넣어 주세요.', '#t-time');
+    state.trip = { airport: airportOf($('#t-airport').value).id, depDate: date, depTime: time, lead: state.trip.lead || 0 };
+    ui.preview = 'auto';
+    ui.calMonth = '';
+    ui.calDay = '';
+    save();
+    closeDlg($('#dlg-trip'));
+    render();
+    toast('여행 정보를 저장했습니다.');
+    return true;
+  }
+
+  /* ---------- 알림 일정 내보내기 ---------- */
+  function exportRem() {
+    var c = context();
+    if (!c.rem.length) { toast('먼저 여행 정보를 입력해 주세요.'); return; }
+
+    if (ui.embedded) {
+      /* 다른 페이지 안에 끼워진 화면에서는 파일 저장이 막혀 있어 글자로 복사합니다 */
+      var text = ['[면세 알림 일정]'].concat(c.rem.map(function (r) { return mdw(L.toISO(r.at)) + ' ' + hm(r.at) + ' ' + r.title; })).join('\n');
+      var sorry = '복사하지 못했습니다. 일정을 길게 눌러 직접 복사해 주세요.';
+      try {
+        navigator.clipboard.writeText(text).then(function () { toast('알림 일정을 복사했습니다.'); }, function () { toast(sorry); });
+      } catch (e) {
+        toast(sorry);
+      }
+      return;
+    }
+
+    try {
+      var blob = new Blob([L.toICS(c.rem, new Date())], { type: 'text/calendar;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'taxgo.ics';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      toast('캘린더 파일을 저장했습니다. 파일을 열어 캘린더에 추가하세요.');
+    } catch (e) {
+      toast('파일을 저장하지 못했습니다.');
+    }
+  }
+
+  /* ---------- 버튼 동작 (data-act="이름") ---------- */
+  function shiftMonth(n) {
+    var cur = ui.calMonth || L.toISO(now()).slice(0, 7);
+    var d = new Date(+cur.slice(0, 4), +cur.slice(5, 7) - 1 + n, 1, 12);
+    ui.calMonth = d.getFullYear() + '-' + L.pad(d.getMonth() + 1);
+    ui.calDay = '';
+    render();
+  }
+
+  function focusEl(sel) {
+    var el = $(sel);
+    if (el) el.focus();
+  }
+
+  var ACT = {
+    tab: function (arg) { go(arg); },
+    add: function () { openReceipt(''); },
+    edit: function (id) { openReceipt(id); },
+    trip: function () { openTrip(); },
+    close: function (arg) { closeDlg(document.getElementById(arg)); },
+
+    /* 영수증 시트: 입력 방식 바꾸기 */
+    formMode: function (arg) {
+      var next = arg === 'items' ? 'items' : 'total';
+      if (next === ui.form.mode) return;
+      if (next === 'items') {
+        if (!ui.form.items.length) ui.form.items.push(blankItem());
+      } else {
+        /* 물품별로 넣던 금액이 있으면 합계 칸에 그대로 옮겨 줍니다 */
+        var sum = formTotal();
+        if (sum) $('#r-total').value = String(sum);
+      }
+      ui.form.mode = next;
+      $('#r-msg').textContent = '';
+      renderFormItems();
+      syncForm();
+      updateCalc();
+      focusEl(next === 'items' ? '#it-name-0' : '#r-total');
+    },
+
+    formAddItem: function () {
+      if (ui.form.items.length >= MAX_ITEMS) return;
+      ui.form.items.push(blankItem());
+      renderFormItems();
+      updateCalc();
+      focusEl('#it-name-' + (ui.form.items.length - 1));
+    },
+
+    formDelItem: function (arg) {
+      var i = toInt(arg);
+      ui.form.items.splice(i, 1);
+      if (!ui.form.items.length) ui.form.items.push(blankItem());
+      renderFormItems();
+      updateCalc();
+      focusEl('#it-name-' + Math.min(i, ui.form.items.length - 1));
+    },
+
+    /* 합계만 넣은 영수증: 영수증 단위로 소비 표시 */
+    consume: function (id) {
+      var i = indexOfReceipt(id);
+      if (i < 0) return;
+      state.receipts[i].consumed = !state.receipts[i].consumed;
+      save();
+      render();
+    },
+
+    del: function (id) {
+      var i = indexOfReceipt(id);
+      if (i < 0) return;
+      ui.undo = { r: state.receipts[i], i: i };
+      state.receipts.splice(i, 1);
+      save();
+      render();
+      toast('영수증을 삭제했습니다.', '되돌리기', 'undo');
+    },
+
+    undo: function () {
+      if (!ui.undo) return;
+      state.receipts.splice(Math.min(ui.undo.i, state.receipts.length), 0, ui.undo.r);
+      ui.undo = null;
+      save();
+      render();
+      toast('영수증을 되돌렸습니다.');
+    },
+
+    preview: function (arg) {
+      ui.preview = arg;
+      ui.calMonth = '';
+      ui.calDay = '';
+      ui.flip = ui.tab === 'home';
+      render();
+      ui.flip = false;
+      if (ui.tab === 'home') $('#view').scrollTop = 0;
+    },
+
+    /* 공항 도착 목표: 0이면 자동, 아니면 출발 몇 시간 전인지 직접 고름 */
+    lead: function (arg) {
+      var hours = toInt(arg);
+      state.trip.lead = hours >= A.baseHours && hours <= A.maxHours ? hours : 0;
+      save();
+      render();
+    },
+
+    calPrev: function () { shiftMonth(-1); },
+    calNext: function () { shiftMonth(1); },
+    calDay: function (iso) { ui.calDay = iso; render(); },
+    calGo: function (iso) {
+      if (!isISO(iso)) return;
+      ui.calMonth = iso.slice(0, 7);
+      ui.calDay = iso;
+      render();
+      $('#view').scrollTop = 0;
+    },
+
+    guide: function (arg) { ui.guideStep = Math.max(0, Math.min(D.guide.length - 1, toInt(arg))); render(); },
+    /* 화살표로 다음 단계에 가면 그 단계의 맨 위부터 보이게 (아래쪽에서 눌렀으니 그대로 두면 새 단계 중간에 떨어짐) */
+    guideNext: function (arg) { ACT.guide(arg); $('#view').scrollTop = 0; },
+    depTab: function (arg) {
+      ui.depTab = DEP_TABS.some(function (x) { return x[0] === arg; }) ? arg : 'steps';
+      render();
+    },
+    exportRem: exportRem,
+    clearChecks: function () { state.checks = {}; save(); render(); },
+
+    startMine: function () {
+      state = emptyState();
+      ui.preview = 'auto';
+      ui.calMonth = '';
+      ui.calDay = '';
+      save();
+      render();
+      openTrip();
+    },
+
+    resetSample: function () {
+      try {
+        window.localStorage.removeItem(STORE_KEY);
+        window.localStorage.removeItem(OLD_STORE_KEY);
+      } catch (e) {
+        /* 저장소를 못 쓰는 환경 */
+      }
+      state = sampleState();
+      ui.preview = 'auto';
+      ui.calMonth = '';
+      ui.calDay = '';
+      closeDlg($('#dlg-trip'));
+      render();
+      toast('예시 데이터로 되돌렸습니다.');
+    }
+  };
+
+  /* ---------- 이벤트 연결 ---------- */
+  document.addEventListener('click', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest('[data-act]') : null;
+    if (!el) return;
+    var fn = ACT[el.getAttribute('data-act')];
+    if (!fn) return;
+    if (el.tagName === 'A') e.preventDefault();
+    fn(el.getAttribute('data-arg') || '', el);
+  });
+
+  document.addEventListener('change', function (e) {
+    var el = e.target;
+    var kind = el && el.getAttribute ? el.getAttribute('data-change') : '';
+    if (kind === 'check') {
+      var i = toInt(el.getAttribute('data-arg'));
+      if (el.checked) state.checks[i] = true; else delete state.checks[i];
+      save();
+      render();
+    } else if (kind === 'airport') {
+      state.trip.airport = airportOf(el.value).id;
+      save();
+      render();
+    } else if (kind === 'itemUsed') {
+      /* 물품별 영수증에서 물품 하나를 소비로 체크하거나 풀기 (data-arg = '영수증id:물품id') */
+      var parts = String(el.getAttribute('data-arg') || '').split(':');
+      var ri = indexOfReceipt(parts[0]);
+      if (ri < 0) return;
+      var r = state.receipts[ri];
+      r.items.forEach(function (it) { if (it.id === parts[1]) it.used = !!el.checked; });
+      save();
+      render();
+    }
+  });
+
+  $('#form-receipt').addEventListener('input', onFormInput);
+  $('#form-receipt').addEventListener('change', updateCalc);
+  $('#form-receipt').addEventListener('submit', submitReceipt);
+  $('#r-items').addEventListener('keydown', onItemKey);
+  $('#form-trip').addEventListener('submit', submitTrip);
+
+  ['#dlg-receipt', '#dlg-trip'].forEach(function (sel) {
+    var d = $(sel);
+    /* 시트 바깥(어두운 부분)을 누르면 닫기 */
+    d.addEventListener('click', function (e) { if (e.target === d) closeDlg(d); });
+  });
+
+  window.addEventListener('hashchange', function () {
+    var t = tabFromHash();
+    if (t && t !== ui.tab) go(t, true);
+  });
+
+  /* ---------- 시작 ---------- */
+  $('#r-method').innerHTML = D.methods.map(function (x) { return '<option value="' + x.id + '">' + esc(x.label) + '</option>'; }).join('');
+  $('#t-airport').innerHTML = D.airports.map(function (x) { return '<option value="' + x.id + '">' + esc(x.name) + '</option>'; }).join('');
+  ui.tab = tabFromHash() || 'home';
+  render();
+
+  /* 스캔 기능을 붙일 때 쓰는 연결점 */
+  window.MYGO_APP = { fillReceiptForm: fillReceiptForm, openReceipt: openReceipt };
+})();
+</script>
+</body>
+</html>

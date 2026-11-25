@@ -114,6 +114,33 @@
   </symbol>
 </svg>
 
+<div class="startup-splash" id="startup-splash" hidden aria-hidden="true">
+  <div class="startup-logo">
+    <span class="startup-wordmark">TaxGo</span>
+    <span class="startup-mark">
+      <svg class="startup-arrow" viewBox="0 0 24 24"><path d="M3 10 18.5 4 13 19l-2.4-6.2Z"/></svg>
+      <svg class="ic startup-plane" viewBox="0 0 24 24"><use href="#i-plane"></use></svg>
+      <span class="startup-sparks"><i></i><i></i><i></i></span>
+    </span>
+  </div>
+</div>
+<script>
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var splash = document.getElementById('startup-splash');
+    try {
+      if (localStorage.getItem('taxgo-ui-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+    } catch (e) { /* 저장소를 사용할 수 없어도 시작 화면은 표시합니다. */ }
+    splash.hidden = false;
+    window.setTimeout(function () {
+      if (splash.hidden) return;
+      splash.hidden = true;
+      var app = document.getElementById('app');
+      if (app) app.inert = false;
+    }, 5200);
+  })();
+</script>
+
 <div class="app" id="app">
   <header class="top">
     <div class="top-row">

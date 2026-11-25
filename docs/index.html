@@ -637,6 +637,58 @@ html[data-theme="dark"] :focus-visible { outline-color: #ffe600; }
 .brand { gap: 0; transform: rotate(-2deg); min-width: 96px; }
 .brand-name { font-family: var(--font-display); font-style: italic; font-size: 24px; letter-spacing: -.06em; line-height: 1.13; white-space: nowrap; }
 .brand-plane { color: var(--sign); fill: var(--sign); filter: drop-shadow(1px 1px 0 var(--ink)); transform: translate(-1px,-6px) rotate(18deg); }
+.startup-splash:not([hidden]) {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--ink);
+  background: radial-gradient(circle, var(--line) 1px, transparent 1px) 0 0 / 9px 9px, var(--floor);
+}
+.startup-logo {
+  position: relative;
+  isolation: isolate;
+  margin-inline-end: .28em;
+  font: italic 950 clamp(39px, 15vw, 72px) / 1.1 var(--font-en);
+  letter-spacing: -.08em;
+}
+.startup-wordmark { position: relative; z-index: 1; }
+.startup-mark {
+  position: absolute;
+  top: -.06em;
+  left: calc(100% + .08em);
+  width: .48em;
+  height: .48em;
+  color: var(--sign);
+}
+.startup-mark > svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: currentColor; stroke: #29240b; stroke-width: 1.45; }
+.startup-plane, .startup-sparks i { opacity: 0; }
+.startup-sparks { position: absolute; inset: 0; pointer-events: none; }
+.startup-sparks i { position: absolute; top: 45%; left: 45%; width: .105em; height: .105em; border-radius: 50%; background: currentColor; }
+.startup-sparks i:nth-child(1) { --spark-x: .28em; --spark-y: -.42em; }
+.startup-sparks i:nth-child(2) { --spark-x: .53em; --spark-y: -.1em; }
+.startup-sparks i:nth-child(3) { --spark-x: .33em; --spark-y: .32em; }
+.startup-splash.is-playing { animation: startup-reveal calc(var(--startup-flight-duration) + 590ms) linear both; }
+.startup-splash.is-playing .startup-wordmark { display: block; animation: startup-logo-in .42s ease-out both; }
+.startup-splash.is-playing .startup-mark { animation: startup-depth var(--startup-flight-duration) step-end both; }
+.startup-splash.is-playing .startup-arrow { animation: startup-icon-out .12s calc(var(--startup-flight-duration) - 60ms) ease-out both; }
+.startup-splash.is-playing .startup-plane { animation: startup-icon-in .19s calc(var(--startup-flight-duration) - 70ms) ease-out both; }
+.startup-splash.is-playing .startup-sparks i { animation: startup-pop .38s calc(var(--startup-flight-duration) - 40ms) ease-out both; }
+@keyframes startup-logo-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes startup-depth { 0%, 95% { z-index: 2; } 50% { z-index: 0; } }
+@keyframes startup-icon-out { to { opacity: 0; transform: scale(.72); } }
+@keyframes startup-icon-in { from { opacity: 0; transform: scale(.76); } to { opacity: 1; transform: scale(1); } }
+@keyframes startup-pop {
+  0% { opacity: 0; transform: scale(.35); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--spark-x), var(--spark-y)) scale(.7); }
+}
+@keyframes startup-reveal { 0%, 88% { opacity: 1; } 100% { opacity: 0; } }
 .languages { display: flex; align-items: center; padding: 2px; gap: 1px; border: 1.7px solid var(--panel-border); background: var(--tint); border-radius: 10px; }
 .languages button { border: 0; border-radius: 7px; background: none; color: var(--ink); min-height: 30px; padding: 3px 7px; font-size: 11px; font-weight: 800; white-space: nowrap; }
 .languages button[aria-pressed="true"] { background: var(--sign); color: #111; box-shadow: 1px 1px 0 rgba(0,0,0,.15); }
@@ -1897,6 +1949,33 @@ html[data-theme="dark"] .quiz-finale-scene { background: linear-gradient(#374754
     <text x="122" y="86" font-size="15" font-family="Arial,sans-serif" font-weight="900" text-anchor="middle" fill="#111116">DEPARTURE</text>
   </symbol>
 </svg>
+
+<div class="startup-splash" id="startup-splash" hidden aria-hidden="true">
+  <div class="startup-logo">
+    <span class="startup-wordmark">TaxGo</span>
+    <span class="startup-mark">
+      <svg class="startup-arrow" viewBox="0 0 24 24"><path d="M3 10 18.5 4 13 19l-2.4-6.2Z"/></svg>
+      <svg class="ic startup-plane" viewBox="0 0 24 24"><use href="#i-plane"></use></svg>
+      <span class="startup-sparks"><i></i><i></i><i></i></span>
+    </span>
+  </div>
+</div>
+<script>
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var splash = document.getElementById('startup-splash');
+    try {
+      if (localStorage.getItem('taxgo-ui-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+    } catch (e) { /* 저장소를 사용할 수 없어도 시작 화면은 표시합니다. */ }
+    splash.hidden = false;
+    window.setTimeout(function () {
+      if (splash.hidden) return;
+      splash.hidden = true;
+      var app = document.getElementById('app');
+      if (app) app.inert = false;
+    }, 5200);
+  })();
+</script>
 
 <div class="app" id="app">
   <header class="top">
@@ -6690,11 +6769,58 @@ window.TAXGO_QUIZ = (function () {
   });
 
   /* ---------- 시작 ---------- */
+  function startupFlight(mark, duration) {
+    // A single tilted ellipse keeps the front and back halves symmetric.
+    var majorX = -1.415;
+    var majorY = .42;
+    var minorScale = .21;
+    var frames = Array.from({ length: 65 }, function (_, index) {
+      var progress = index / 64;
+      if (progress > .8) {
+        var settle = (progress - .8) / .2;
+        progress += .2 * settle * settle * (1 - settle);
+      }
+      var angle = progress * 2 * Math.PI;
+      var along = 1 - Math.cos(angle);
+      var across = Math.sin(angle) * minorScale;
+      var x = majorX * along + majorY * across;
+      var y = majorY * along - majorX * across;
+      return { transform: 'translate(' + x + 'em, ' + y + 'em) rotate(18deg)' };
+    });
+    mark.animate(frames, { duration: duration, fill: 'both' });
+  }
+
+  function playStartup() {
+    var splash = $('#startup-splash');
+    if (splash.hidden || !canAnimate(splash)) {
+      splash.hidden = true;
+      animateMenuEntry();
+      return;
+    }
+    var app = $('#app');
+    var timeout;
+    function finish(event) {
+      if (event && (event.target !== splash || event.animationName !== 'startup-reveal')) return;
+      window.clearTimeout(timeout);
+      splash.removeEventListener('animationend', finish);
+      splash.hidden = true;
+      app.inert = false;
+      animateMenuEntry();
+    }
+    var flightDuration = 1460;
+    app.inert = true;
+    splash.addEventListener('animationend', finish);
+    timeout = window.setTimeout(finish, 2600);
+    splash.style.setProperty('--startup-flight-duration', flightDuration + 'ms');
+    splash.classList.add('is-playing');
+    startupFlight(splash.querySelector('.startup-mark'), flightDuration);
+  }
+
   $('#r-method').innerHTML = D.methods.map(function (x) { return '<option value="' + x.id + '">' + esc(x.label) + '</option>'; }).join('');
   $('#t-airport').innerHTML = airportSelectHTML(state.trip.airport);
   ui.tab = tabFromHash() || 'home';
   render();
-  animateMenuEntry();
+  playStartup();
 
   /* 자정이나 출발 시각에 시점별 안내를 갱신합니다. */
   function refreshPhase() {

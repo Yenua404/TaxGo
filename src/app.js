@@ -241,11 +241,15 @@
       }
       node.nodeValue = original.replace(trimmed, translated);
     }
-    var controls = root.querySelectorAll('[placeholder]');
-    for (var i = 0; i < controls.length; i++) {
-      if (!controls[i].hasAttribute('data-original-placeholder')) controls[i].setAttribute('data-original-placeholder', controls[i].getAttribute('placeholder'));
-      controls[i].setAttribute('placeholder', localeText(controls[i].getAttribute('data-original-placeholder')));
-    }
+    ['placeholder', 'aria-label', 'title'].forEach(function (attribute) {
+      root.querySelectorAll('[' + attribute + ']').forEach(function (element) {
+        var key = 'data-original-' + attribute;
+        var original = element.getAttribute(key) || element.getAttribute(attribute);
+        if (!window.TAXGO_I18N || !Object.prototype.hasOwnProperty.call(window.TAXGO_I18N, original)) return;
+        element.setAttribute(key, original);
+        element.setAttribute(attribute, localeText(original));
+      });
+    });
   }
   function mascot(cls) {
     return '<svg class="mascot-art ' + (cls || '') + '" viewBox="0 0 156 164" aria-hidden="true"><use href="#i-mascot"></use></svg>';
@@ -533,7 +537,9 @@
     return c.views.filter(function (x) {
       return x.v.eligible && c.trip.depDate <= x.v.due;
     }).map(function (x) {
-      return { store: x.r.store, lines: x.v.count ? x.r.items : [
+      return { store: receiptText(x.r, x.r.store), lines: x.v.count ? x.r.items.map(function (it) {
+        return Object.assign({}, it, { name: receiptText(x.r, it.name) });
+      }) : [
         { name: tr('영수증 전체', 'レシート全体', 'Entire receipt'), price: x.v.total, used: x.r.consumed }
       ] };
     });
@@ -655,18 +661,22 @@
 
   /* ---------- 화면: 영수증 ---------- */
   function line(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
+  function receiptText(r, value) {
+    return state.sample && /^s[123]$/.test(r.id) ? localeText(value) : value;
+  }
 
   /* 물품별로 입력한 영수증의 물품 한 줄. 체크하면 '먹었거나 써서 없음' */
   function itemRow(r, it) {
     var key = 'used-' + r.id + '-' + it.id;
     return '<li><label class="item" for="' + key + '">' +
       '<input type="checkbox" id="' + key + '" data-change="itemUsed" data-arg="' + r.id + ':' + it.id + '" data-key="' + key + '"' + (it.used ? ' checked' : '') + '>' +
-      '<span class="item-name"><span class="sr">먹었거나 써서 없음: </span><span class="item-text">' + esc(it.name) + '</span>' +
+      '<span class="item-name"><span class="sr">먹었거나 써서 없음: </span><span class="item-text" data-user-text>' + esc(receiptText(r, it.name)) + '</span>' +
       (it.used ? '<span class="chip chip-risk">소비</span>' : '') + '</span>' +
       '<span class="item-price">' + yen(it.price) + '</span></label></li>';
   }
 
   function slip(r, v, c) {
+    var store = receiptText(r, r.store);
     var ok = v.status === 'ok';
     var itemized = r.mode === 'items';
     var left = L.diffDays(c.todayISO, v.due);
@@ -674,8 +684,10 @@
       : v.status === 'late' ? '출국일이 이 영수증의 출국 기한보다 늦습니다. 기한 안에 출국해야 환급받을 수 있습니다.'
       : v.status === 'under' ? '세전 ' + yen(D.rules.minPreTax) + ' 미만이라 면세 대상이 아닙니다.'
       : '';
-    return '<article class="slip-wrap" aria-label="' + esc(r.store) + ' 영수증"><div class="slip">' +
-      '<div class="slip-head"><div><h2 class="slip-store">' + esc(r.store) + '</h2><p class="slip-date">' + esc(mdw(r.date)) + ' 구매' + (itemized ? ', 물품 ' + v.count + '개' : '') + '</p></div>' +
+    if (v.status === 'under') msg = tr(msg, '税抜' + yen(D.rules.minPreTax) + '未満のため、免税対象外です。', 'The pre-tax total is below ' + yen(D.rules.minPreTax) + '.');
+    return '<article class="slip-wrap" aria-label="' + esc(tr(store + ' 영수증', store + 'のレシート', 'Receipt from ' + store)) + '"><div class="slip">' +
+      '<div class="slip-head"><div><h2 class="slip-store" data-user-text>' + esc(store) + '</h2><p class="slip-date">' + tr(esc(mdw(r.date)) + ' 구매', esc(mdw(r.date)) + 'に購入', 'Purchased ' + esc(mdw(r.date))) +
+      (itemized ? tr(' · 물품 ' + v.count + '개', ' · ' + v.count + '点', ' · ' + v.count + (v.count === 1 ? ' item' : ' items')) : '') + '</p></div>' +
       '<span class="stamp disp ' + (ok ? 'is-ok' : 'is-no') + '">' + (ok ? '환급 가능' : '환급 불가') + '</span></div>' +
       (itemized
         ? '<div class="items"><p class="items-head" id="items-' + r.id + '">먹었거나 쓴 물건에 체크하세요</p>' +
@@ -686,13 +698,13 @@
       line('세전 금액', yen(v.pre)) +
       (v.fee ? line('환급 수수료', '−' + yen(v.fee)) : '') +
       line('환급 방법', esc(methodLabel(r.method))) +
-      line('출국 기한', ymd(v.due) + (left >= 0 ? ' (D-' + left + ')' : ' (지남)')) +
+      line('출국 기한', ymd(v.due) + (left >= 0 ? ' (D-' + left + ')' : tr(' (지남)', '（期限切れ）', ' (expired)'))) +
       '<div class="is-total' + (ok ? '' : ' is-void') + '"><dt>환급 예상</dt><dd>' + yen(v.net) + '</dd></div>' +
       '</dl>' +
       (msg ? '<p class="slip-msg">' + msg + '</p>' : '') +
       '<div class="slip-actions">' +
       (itemized
-        ? '<span class="slip-count">' + (v.used ? '물품 ' + v.count + '개 가운데 ' + v.used + '개 소비' : '소비한 물건 없음') + '</span>'
+        ? '<span class="slip-count">' + (v.used ? tr('물품 ' + v.count + '개 가운데 ' + v.used + '개 소비', v.count + '点中' + v.used + '点を消費', v.used + ' of ' + v.count + ' items used') : '소비한 물건 없음') + '</span>'
         : '<button type="button" class="btn btn-line btn-sm" data-act="consume" data-arg="' + r.id + '" data-key="consume-' + r.id + '" aria-pressed="' + !!r.consumed + '">' +
           (r.consumed ? icon('check', 18) : '') + '물건 소비</button>') +
       '<span class="slip-tools">' +
@@ -743,7 +755,7 @@
         var r = x.r; var v = x.v;
         return '<details class="receipt-item" data-receipt="' + r.id + '"' + (open.has(r.id) ? ' open' : '') +
           '><summary class="receipt-line"><span class="receipt-icon">' + icon('bag', 24) + '</span>' +
-          '<span class="receipt-line-main"><strong data-user-text>' + esc(r.store) + '</strong><small>' + esc(ymd(r.date)) + '</small></span>' +
+          '<span class="receipt-line-main"><strong data-user-text>' + esc(receiptText(r, r.store)) + '</strong><small>' + esc(ymd(r.date)) + '</small></span>' +
           '<span class="receipt-line-amount"><strong>' + yen(v.total) + '</strong><em class="receipt-status ' + (v.status === 'ok' ? 'is-eligible' : 'is-review') + '">' + (v.status === 'ok' ? tr('환급 가능', '還付可能', 'Eligible') : tr('확인 필요', '要確認', 'Review')) + '</em></span>' +
           '<span class="receipt-expand">' + icon('chevron-down', 19) + '</span>' +
           '<span class="receipt-line-refund' + (v.status === 'ok' ? '' : ' is-ineligible') + '"><span>' + tr('예상 환급액', '還付見込み額', 'Estimated refund') + '</span><strong>' + yen(v.status === 'ok' ? v.net : 0) + '</strong></span></summary><div class="receipt-detail">' + slip(r, v, c) + '</div></details>';
@@ -759,8 +771,9 @@
     var map = {};
     function add(iso, kind, text) { (map[iso] = map[iso] || []).push({ kind: kind, text: text }); }
     c.views.forEach(function (x) {
-      add(x.r.date, 'buy', tr('구매: ', '購入: ', 'Purchase: ') + x.r.store + ' ' + yen(x.v.total));
-      if (x.v.status === 'ok' || x.v.status === 'late') add(x.v.due, 'due', tr('출국 기한: ', '出国期限: ', 'Departure deadline: ') + x.r.store);
+      var store = receiptText(x.r, x.r.store);
+      add(x.r.date, 'buy', tr('구매: ', '購入: ', 'Purchase: ') + store + ' ' + yen(x.v.total));
+      if (x.v.status === 'ok' || x.v.status === 'late') add(x.v.due, 'due', tr('출국 기한: ', '出国期限: ', 'Departure deadline: ') + store);
     });
     if (c.trip.depDate) add(c.trip.depDate, 'dep', tr('출국: ', '出発: ', 'Departure: ') + c.trip.depTime + ' ' + airportValue(c.airport, 'name'));
     R.monthOccurrences(c.rem, month).forEach(function (r) {
@@ -981,7 +994,7 @@
     var h = [];
     var done = 0;
     D.checklist.forEach(function (_, i) { if (state.checks[i]) done++; });
-    h.push('<div class="page-head"><h1 class="page-title disp">' + icon('plane', 28) + tr('출국 환급', '出国・還付', 'Departure refund') + '</h1>' +
+    h.push('<div class="page-head"><h1 class="page-title disp">' + icon('plane', 28) + tr('출국 환급', '出国・還付', 'Departure & refunds') + '</h1>' +
       '<button type="button" class="departure-mascot-peek" data-act="showChecklist" data-key="top-checklist" aria-label="' + tr('마스코트를 눌러 체크리스트 열기', 'マスコットでチェックリストを開く', 'Tap mascot to open checklist') + '">' + mascot('mascot-header') + '<span class="speech-bubble">' + tr('체크리스트', 'チェックリスト', 'Checklist') + ' (' + done + '/' + D.checklist.length + ')</span></button></div>');
     h.push(arrivalNotice(c));
     if (!ui.airportRevealed) {
@@ -1026,7 +1039,7 @@
       (a.note ? '<p class="board-note"><b>' + tr('참고', '備考', 'Note') + '</b>' + nb(airportValue(a, 'note')) + '</p>' : '') +
       '<a class="board-src" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer">' + tr('출처', '出典', 'Source') + ': ' + nb(a.src) + ' · ' + esc(D.checkedAt) + icon('ext',14) + '</a></section>');
     var bad = c.views.filter(function (x) { return x.v.status === 'consumed'; });
-    if (bad.length) h.push('<p class="note note-risk">' + icon('warn',20) + '<span><b>' + tr('세관 직원에게 먼저 알려야 할 영수증', '税関職員に先に伝えるレシート', 'Receipts to report to customs') + ': ' + bad.length + '</b><span>' + esc(bad.map(function (x) { return x.r.store; }).join(', ')) + ' · ' + tr('먹거나 쓴 물건은 키오스크 대신 세관 직원에게 먼저 말하세요.', '消費した品物がある場合、先に税関職員に申し出てください。', 'Tell customs first about used or consumed items.') + '</span></span></p>');
+    if (bad.length) h.push('<p class="note note-risk">' + icon('warn',20) + '<span><b>' + tr('세관 직원에게 먼저 알려야 할 영수증', '税関で申告が必要なレシート', 'Receipts to report to customs') + ': ' + bad.length + '</b><span>' + esc(bad.map(function (x) { return receiptText(x.r, x.r.store); }).join(', ')) + ' · ' + tr('먹거나 쓴 물건은 키오스크 대신 세관 직원에게 먼저 말하세요.', '消費した品物がある場合は、先に税関職員に申し出てください。', 'Tell a customs officer first if you used or consumed any items.') + '</span></span></p>');
     h.push('<section class="checklist-launch-card"><div class="checklist-launch-copy"><span class="pixel-eyebrow">CHECK LIST</span>' +
       '<h2>' + tr('출국 전 체크리스트', '出国前チェックリスト', 'Pre-departure checklist') + '</h2>' +
       '<p>' + tr('마스코트를 터치해 체크리스트를 펼쳐 보세요.', 'マスコットをタップするとチェックリストが開きます。', 'Tap the mascot to open your checklist.') + '</p>' +
@@ -1490,7 +1503,7 @@
   }
 
   function fail(msgEl, text, focusSel) {
-    msgEl.textContent = text;
+    msgEl.textContent = localeText(text);
     var el = $(focusSel);
     if (el) el.focus();
     return false;
@@ -1549,11 +1562,14 @@
     var v = L.receiptView({ total: total, rate: rate, fee: fee, date: isISO(date) ? date : L.toISO(new Date()), consumed: false }, D.rules, '');
     if (!v.eligible) {
       var pct = Math.min(100, Math.round(v.pre * 100 / D.rules.minPreTax));
-      box.innerHTML = '<p><b>아직 면세 대상이 아닙니다.</b> 세전 ' + yen(v.pre) + '이라 ' + yen(D.rules.minPreTax - v.pre) + ' 더 담아야 합니다.</p>' +
+      box.innerHTML = '<p><b>' + tr('아직 면세 대상이 아닙니다.', '免税の最低購入額に達していません。', 'Below the tax-free minimum.') + '</b> ' +
+        tr('세전 ' + yen(v.pre) + '이라 ' + yen(D.rules.minPreTax - v.pre) + ' 더 담아야 합니다.', '税抜合計は' + yen(v.pre) + 'です。あと' + yen(D.rules.minPreTax - v.pre) + 'で金額条件を満たします。',
+          'Your pre-tax total is ' + yen(v.pre) + '. Add ' + yen(D.rules.minPreTax - v.pre) + ' to reach the minimum.') + '</p>' +
         '<div class="meter"><span style="width:' + pct + '%"></span></div>';
     } else {
-      box.innerHTML = '<p>환급 예상<b class="calc-big">' + yen(v.net) + '</b></p>' +
-        '<p class="calc-sub">세전 ' + yen(v.pre) + ', 출국 기한 ' + ymd(v.due) + '까지</p>' +
+      box.innerHTML = '<p>' + tr('환급 예상', '還付見込み額', 'Estimated refund') + '<b class="calc-big">' + yen(v.net) + '</b></p>' +
+        '<p class="calc-sub">' + tr('세전 ' + yen(v.pre) + ', 출국 기한 ' + ymd(v.due) + '까지', '税抜 ' + yen(v.pre) + ' · 出国期限 ' + ymd(v.due),
+          'Pre-tax total ' + yen(v.pre) + ' · Depart by ' + ymd(v.due)) + '</p>' +
         '<div class="meter is-ok"><span style="width:100%"></span></div>';
     }
   }
@@ -1649,7 +1665,9 @@
     if (!items.length) return fail(msg, tr('물품을 하나 이상 넣어 주세요.', '品物を1つ以上入力してください。', 'Enter at least one item.'), '#it-name-0');
     if (isNaN(fee)) return fail(msg, tr('수수료를 0~99,999,999엔 사이의 정수로 넣어 주세요.', '手数料は0～99,999,999円の整数で入力してください。', 'Enter a whole-yen fee from 0 to 99,999,999.'), '#r-fee');
     if (L.preTaxOf(total, rate) < D.rules.minPreTax) {
-      return fail(msg, '세전 ' + yen(D.rules.minPreTax) + ' 미만이라 면세 영수증으로 저장할 수 없습니다.', '#r-add-item');
+      return fail(msg, tr('세전 ' + yen(D.rules.minPreTax) + ' 미만이라 면세 영수증으로 저장할 수 없습니다.',
+        '税抜合計が' + yen(D.rules.minPreTax) + '未満のため、免税レシートとして保存できません。',
+        'A pre-tax total of at least ' + yen(D.rules.minPreTax) + ' is required to save a tax-free receipt.'), '#r-add-item');
     }
 
     var idx = f.editId ? indexOfReceipt(f.editId) : -1;

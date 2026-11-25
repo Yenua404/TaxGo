@@ -49,6 +49,7 @@
   <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3h-3z"></path><path d="M20.5 14.5h.01"></path><path d="M20.5 20.5h.01"></path><path d="M14.5 20.5h.01"></path><path d="M20.5 17.5h.01"></path><path d="M17.5 20.5h.01"></path></symbol>
 
   <!-- 시안의 레트로 픽셀 아이콘 및 영수증/여권 마스코트 (벡터로 직접 재현) -->
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M3 10h4v4H3zM10 10h4v4h-4zM17 10h4v4h-4z" fill="currentColor" stroke="none"></path></symbol>
   <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 6V4h14v4M3 8h18v12H3z"></path><path d="M15 12h7v5h-7a2.5 2.5 0 0 1 0-5z"></path><path d="M17.5 14.5h.01"></path></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c-5 5-5 13 0 18M12 3c5 5 5 13 0 18M5 7h14M5 17h14"></path></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15a8.5 8.5 0 0 1-11-11A8.5 8.5 0 1 0 20 15z"></path><path d="M18 3v3m-1.5-1.5h3"></path></symbol>
@@ -96,21 +97,34 @@
     </g>
   </symbol>
   <symbol id="i-terminal" viewBox="0 0 380 120">
-    <g stroke="currentColor" stroke-width="4.5" stroke-linejoin="miter" stroke-linecap="square">
-      <path d="M4 113h371"/>
-      <path d="M28 112V69l22-10 163 9 20 11v33Z" fill="var(--paper)"/>
-      <path d="M24 72 49 59 214 66 234 79H23z" fill="var(--sign)"/>
-      <path d="M51 83h157M51 99h157M67 78v35m27-35v35m27-35v35m27-35v35m27-35v35" stroke-width="2.5"/>
-      <path d="M236 112V57h40v55z" fill="var(--paper)"/>
-      <path d="M228 57h56l-5-13h-46z" fill="var(--sign)"/>
-      <path d="M243 43V12h23v31M238 28h33" fill="none"/>
-      <path d="M232 15h42" stroke-width="4"/>
-      <path d="M11 58q-8-6 1-12 4-9 14-4 13-6 19 8h5v8z" fill="var(--paper)" stroke-width="3"/>
-      <path d="m297 42 17-6 16-15 12-2-11 17 27-2 6 7-31 9-8 18-8 5-2-23-17-5z" fill="var(--paper)" stroke-width="4"/>
-      <path d="M48 109h167" stroke="var(--sign)" stroke-width="4"/>
+    <path d="M24 42h9v-6h10v-6h19v5h11v7h14v5H24zm109-15h10v-6h10v-5h16v5h12v6h13v4h-61z" fill="var(--ink)" opacity=".14"/>
+    <path d="M14 107h352v10H14z" fill="var(--ink)" opacity=".13"/>
+    <path d="M30 113h30m44 0h30m44 0h30m44 0h30m44 0h24" stroke="var(--ink)" stroke-width="2" opacity=".3"/>
+    <g stroke="currentColor" stroke-width="3.5" stroke-linejoin="bevel">
+      <path d="M246 107V94h5V37h22v57h5v13Z" fill="var(--paper)"/>
+      <path d="M252 45h20m-10-30V6" fill="none"/>
+      <path d="m246 39-8-7V21h48v11l-8 7Z" fill="#a5c8d4"/>
+      <path d="M254 23v11m16-11v11" fill="none" stroke-width="2.5"/>
+      <path d="M235 22v-4h7v-4h40v4h7v4Z" fill="var(--sign)"/>
+
+      <path d="M32 67h192v40H32zM224 82h25v25h-25z" fill="var(--paper)"/>
+      <path d="M23 68v-6h10v-5h190v5h10v6Z" fill="var(--sign)"/>
+      <path d="M43 77h94v23H43zm152 0h18v23h-18z" fill="#a5c8d4" stroke-width="3"/>
+      <path d="M52 91l10-10h8L60 91zm29 0 10-10h8l-10 10zm29 0 10-10h8l-10 10z" fill="#eef8f8" stroke="none"/>
+      <path d="M66 77v23m24-23v23m23-23v23m91-23v23" fill="none" stroke-width="2.5"/>
+      <path d="M150 83h34v24h-34z" fill="#a5c8d4" stroke-width="3"/>
+      <path d="M145 83v-5h44v5Z" fill="var(--sign)" stroke-width="2.5"/>
+      <path d="M167 85v22" fill="none" stroke-width="2.5"/>
     </g>
-    <rect x="65" y="71" width="115" height="22" fill="var(--sign)"/>
-    <text x="122" y="86" font-size="15" font-family="Arial,sans-serif" font-weight="900" text-anchor="middle" fill="#111116">DEPARTURE</text>
+
+    <g transform="translate(293 57) rotate(-11)" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+      <path d="m29 6-9-13h7L44 6" fill="var(--paper)"/>
+      <path d="M4 6 1-5h7l10 11h42l6 2 4 4v3l-5 3H19L2 12V6Z" fill="var(--paper)"/>
+      <path d="M21 12h28" stroke="var(--sign)" stroke-width="2.5"/>
+      <path d="M60 9l5 1 2 2h-7z" fill="#426775" stroke="none"/>
+      <path d="m41 14-16 13h8l18-12" fill="var(--paper)"/>
+    </g>
+    <path d="M14 107h352" fill="none" stroke="var(--ink)" stroke-width="2.5" opacity=".55"/>
   </symbol>
 </svg>
 
@@ -172,12 +186,11 @@
   </main>
 
   <nav class="tabs" aria-label="주요 메뉴">
-    <svg class="nav-surface" viewBox="0 0 400 86" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 20 H151 C166 20 171 25 175 40 C179 55 187 62 200 62 C213 62 221 55 225 40 C229 25 234 20 249 20 H400 V86 H0 Z"/><path class="nav-edge" d="M0 20 H151 C166 20 171 25 175 40 C179 55 187 62 200 62 C213 62 221 55 225 40 C229 25 234 20 249 20 H400"/></svg>
     <a class="tab" href="#home" data-act="tab" data-arg="home"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-home"></use></svg><span>홈</span></a>
     <a class="tab" href="#receipts" data-act="tab" data-arg="receipts"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-receipt"></use></svg><span>영수증</span></a>
     <a class="tab tab-departure" href="#departure" data-act="tab" data-arg="departure"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-plane"></use></svg><span>출국</span></a>
     <a class="tab" href="#calendar" data-act="tab" data-arg="calendar"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-cal"></use></svg><span>캘린더</span></a>
-    <a class="tab" href="#wallet" data-act="tab" data-arg="wallet"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-wallet"></use></svg><span>월렛</span></a>
+    <a class="tab" href="#wallet" data-act="tab" data-arg="wallet"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-more"></use></svg><span>더보기</span></a>
   </nav>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

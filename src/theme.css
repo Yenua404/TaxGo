@@ -517,6 +517,16 @@ dialog { border: 1.8px solid var(--panel-border); border-bottom: 0; border-radiu
 }
 /* Each card keeps its intrinsic height inside the vertically scrolling mobile viewport. */
 .view > * { flex: 0 0 auto; }
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal {
+    transform-origin: top center;
+    transition: opacity .24s ease-out, scale .24s ease-out;
+  }
+  .scroll-reveal.is-below-view:not(:focus-within) {
+    opacity: .92;
+    scale: .986;
+  }
+}
 
 /* Full-screen mobile safe areas and touch-friendly help tab. */
 .app { height: 100dvh; }
@@ -713,14 +723,13 @@ html[data-theme="dark"] .mk-memo { background:#67c2bd; border-color:#67c2bd; }
 .notification-switch { position:relative; }
 .notification-switch input, .reminder-item-toggle input { top:50%; left:50%; transform:translate(-50%,-50%); margin:0; }
 
-/* === v5: accessible amounts, notched navigation, QR presentation and multilingual fonts === */
+/* === Accessible amounts, bottom navigation, QR presentation and multilingual fonts === */
 :root {
   --font-ko: "Noto Sans KR", "Apple SD Gothic Neo", "Noto Sans CJK KR", "Malgun Gothic", sans-serif;
   --font-ja: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", Meiryo, sans-serif;
   --font-en: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --font-body: var(--font-ko);
   --font-display: var(--font-body);
-  --tab-height: 86px;
   --glyph-outline: #161b24;
 }
 html[lang="ja"] { --font-body: var(--font-ja); --font-display: var(--font-ja); }
@@ -752,16 +761,13 @@ button, input, select, textarea { font-family: inherit; }
 .receipt-line-refund strong { color: #775f00; font-size: 17px; line-height: 1.2; font-weight: 900; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .receipt-line-refund.is-ineligible strong { color: var(--ink-soft); }
 html[data-theme="dark"] .receipt-line-refund:not(.is-ineligible) strong { color: #eed56a; }
-/* Real curved notch in the nav surface, with departure permanently floated above it. */
-.app > .tabs { position: relative; isolation: isolate; background: transparent; border: 0; box-shadow: none; height: calc(86px + env(safe-area-inset-bottom, 0px)); min-height: 86px; grid-template-rows: 86px; padding: 0 5px env(safe-area-inset-bottom, 0px); overflow: visible; align-content: start; }
-.nav-surface { position: absolute; inset: 0 0 auto; width: 100%; height: 86px; pointer-events: none; fill: var(--paper); z-index: -1; overflow: visible; }
-.nav-surface .nav-edge { stroke: var(--panel-border); stroke-width: 1.5; vector-effect: non-scaling-stroke; fill: none; }
-.app > .tabs::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: env(safe-area-inset-bottom, 0px); background: var(--paper); z-index: -1; }
-.app > .tabs > .tab { height: 64px; min-height: 0; margin-top: 20px; gap: 5px; padding: 4px 1px; min-width: 0; line-height: 1.2; text-align: center; }
+/* The surface starts at the tab row. Only the departure icon extends into the view. */
+.app > .tabs { position: relative; isolation: isolate; background: var(--paper); border: 0; box-shadow: inset 0 1.5px var(--panel-border); height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px)); min-height: var(--tab-height); grid-template-rows: var(--tab-height); padding: 0 5px env(safe-area-inset-bottom, 0px); overflow: visible; align-content: start; }
+.app > .tabs > .tab { height: 64px; min-height: 0; gap: 5px; padding: 4px 1px; min-width: 0; line-height: 1.2; text-align: center; }
 .app > .tabs > .tab > span { font-size: 11px; font-weight: 750; overflow-wrap: anywhere; }
 .app > .tabs > .tab:not(.tab-departure) .ic { width: 24px; height: 24px; padding: 3px; border-radius: 6px; }
-.app > .tabs > .tab.tab-departure { height: 84px; margin: 0; padding: 1px 0 0; justify-content: flex-start; gap: 9px; }
-.app > .tabs > .tab.tab-departure .ic { width: 28px; height: 28px; padding: 10px; box-sizing: content-box; border: 2px solid #161b24; border-radius: 50%; background: var(--sign); color: #161b24; box-shadow: 0 3px 0 #161b24; stroke-width: 2.5; }
+.app > .tabs > .tab.tab-departure { padding: 1px 0 0; justify-content: flex-start; gap: 9px; }
+.app > .tabs > .tab.tab-departure .ic { flex: none; width: 28px; height: 28px; margin-top: -20px; padding: 10px; box-sizing: content-box; border: 2px solid #161b24; border-radius: 50%; background: var(--sign); color: #161b24; box-shadow: 0 3px 0 #161b24; stroke-width: 2.5; }
 .app > .tabs > .tab.tab-departure[aria-current="page"] .ic { background: #161b24; color: var(--sign); border-color: var(--sign); box-shadow: 0 3px 0 #161b24; }
 .app > .tabs > .tab.tab-departure > span { margin-top: 2px; }
 .app > .tabs > .tab:focus-visible { outline-offset: -2px; }

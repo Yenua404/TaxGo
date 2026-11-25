@@ -1147,7 +1147,7 @@
     var category = pick.category;
     var item = pick.item;
     var back = category ? tr('종류 다시 고르기', '種類を選び直す', 'Choose another category') :
-      tr('월렛으로 돌아가기', 'ウォレットに戻る', 'Back to wallet');
+      backToMoreLabel();
     var content;
     if (!category) {
       content = '<p class="pick-prompt">' + tr('추천받을 면세품 종류를 골라 주세요.', 'おすすめを見たい種類を選んでください。', 'Choose a category to discover a pick.') + '</p>' +
@@ -1213,7 +1213,7 @@
       (loaded ? QUIZ_ART.plane + '<div class="quiz-loaded">' + bags + '</div>' : bags + quizMascot('sad')) + '</div>' +
       '<div class="quiz-end-actions"><button type="button" class="btn btn-sign" data-act="quizRestart">' +
       tr('다시 도전', 'もう一度挑戦', 'Play again') + '</button><button type="button" class="btn btn-line" data-act="quizExit">' +
-      tr('월렛으로', 'ウォレットへ', 'Back to wallet') + '</button></div></div>';
+      backToMoreLabel() + '</button></div></div>';
   }
 
   function viewQuiz() {
@@ -1222,7 +1222,7 @@
     var finished = quiz.phase === 'finished';
     var round = Math.min(quiz.index + 1, total);
     var html = '<section class="quiz-game"><button type="button" class="wallet-back quiz-back" data-act="quizExit" data-key="quiz-back">' +
-      icon('left', 20) + tr('월렛으로 돌아가기', 'ウォレットに戻る', 'Back to wallet') + '</button>' +
+      icon('left', 20) + backToMoreLabel() + '</button>' +
       '<header class="quiz-heading"><h1>' + quizTitle() + '</h1><div class="quiz-hud">' +
       '<span>' + tr('문제', '問題', 'Round') + ' ' + round + '/' + total + '</span><span>' +
       tr('정답', '正解', 'Correct') + ' ' + quiz.score + '/' + total + '</span></div></header>';
@@ -1267,10 +1267,10 @@
     var p = ui.passport;
     var number = p.number ? (ui.passportRevealed ? esc(p.number) : '•••• ' + esc(p.number.slice(-4))) : '—';
     if (ui.walletGuide >= 0) {
-      return '<button type="button" class="wallet-back" data-act="walletHome">' + icon('left', 21) + tr('월렛으로 돌아가기', 'ウォレットに戻る', 'Back to wallet') + '</button>' +
+      return '<button type="button" class="wallet-back" data-act="walletHome">' + icon('left', 21) + backToMoreLabel() + '</button>' +
         '<div class="wallet-detail">' + viewGuide() + '</div>';
     }
-    return '<div class="page-head"><h1 class="page-title disp">' + icon('wallet', 29) + tr('월렛', 'ウォレット', 'Wallet') + '</h1></div>' +
+    return '<div class="page-head"><h1 class="page-title disp">' + icon('more', 29) + moreLabel() + '</h1></div>' +
       mascotHint(tr('출국 전에 여권과 QR을 다시 확인해 주세요!', '出国前にパスポートとQRを確認しましょう！', 'Check your passport and QR before departure!')) +
       '<div class="wallet-stack"><section class="wallet-stack-card wallet-qr"><div class="wallet-qr-left">' +
       '<h2>' + icon('bag', 24) + tr('면세 QR 카드', '免税QRカード', 'Tax-free QR card') + '</h2>' +
@@ -1296,6 +1296,14 @@
   }
 
   var VIEWS = { home: viewHome, receipts: viewReceipts, calendar: viewCalendar, departure: viewDeparture, wallet: viewWallet };
+
+  function moreLabel() {
+    return tr('더보기', 'その他', 'More');
+  }
+
+  function backToMoreLabel() {
+    return tr('더보기로 돌아가기', 'その他に戻る', 'Back to More');
+  }
 
   /* ---------- 그리기 ---------- */
   function renderMemoChrome() {
@@ -1343,7 +1351,7 @@
     }
     var labels = {
       home: tr('홈', 'ホーム', 'Home'), receipts: tr('영수증', 'レシート', 'Receipts'),
-      departure: tr('출국', '出国', 'Depart'), calendar: tr('캘린더', 'カレンダー', 'Calendar'), wallet: tr('월렛', 'ウォレット', 'Wallet')
+      departure: tr('출국', '出国', 'Depart'), calendar: tr('캘린더', 'カレンダー', 'Calendar'), wallet: moreLabel()
     };
     $('.tabs').setAttribute('aria-label', tr('주요 메뉴', 'メインメニュー', 'Main menu'));
     var tabs = document.querySelectorAll('.tab');
@@ -1374,6 +1382,7 @@
     localizeDom($('#dlg-passport'));
     localizeDom($('#dlg-reminder'));
     $('#view').scrollTop = oldScroll;
+    observeScrollContent($('#view'));
     var quickTrack = $('#quick-track');
     if (quickTrack && ui.quickIndex) quickTrack.scrollLeft = quickOffset(quickTrack, ui.quickIndex);
     renderMemoChrome();
@@ -1400,6 +1409,37 @@
 
   function canAnimate(element) {
     return typeof element.animate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  var scrollObserver;
+  function observeScrollContent(view) {
+    if (scrollObserver) scrollObserver.disconnect();
+    if (!window.IntersectionObserver || !canAnimate(view)) return;
+
+    scrollObserver = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
+        var element = entry.target;
+        if (!entry.rootBounds || entry.isIntersecting || entry.boundingClientRect.top < entry.rootBounds.bottom) {
+          element.classList.remove('is-below-view');
+          observer.unobserve(element);
+        } else {
+          element.classList.add('scroll-reveal', 'is-below-view');
+        }
+      });
+    }, { root: view });
+
+    view.querySelectorAll([
+      ':scope > :not(.receipt-list, .departure-results, .reminder-section, .wallet-stack, .wallet-detail, .pick-game, .quiz-game)',
+      ':scope > :is(.receipt-list, .departure-results, .wallet-stack) > *',
+      ':scope > .reminder-section > :not(.reminder-list)',
+      ':scope > .reminder-section > .reminder-list > .reminder-card',
+      ':scope > .wallet-detail > :not(.sec)',
+      ':scope > .wallet-detail > .sec > *',
+      ':scope > .pick-game > :not(.pick-scene, .pick-result)',
+      ':scope > .pick-game > .pick-result > *',
+      ':scope > .quiz-game > :not(.quiz-finale)',
+      ':scope > .quiz-game > .quiz-finale > *'
+    ].join(', ')).forEach(function (element) { scrollObserver.observe(element); });
   }
 
   function quickOffset(track, index) {

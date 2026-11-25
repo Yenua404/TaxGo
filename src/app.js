@@ -1426,7 +1426,7 @@
           element.classList.add('scroll-reveal', 'is-below-view');
         }
       });
-    }, { root: view });
+    }, { root: view, rootMargin: '0px 0px -' + getComputedStyle(view).scrollPaddingBottom + ' 0px' });
 
     view.querySelectorAll([
       ':scope > :not(.receipt-list, .departure-results, .reminder-section, .wallet-stack, .wallet-detail, .pick-game, .quiz-game)',
@@ -1936,7 +1936,8 @@
     var view = $('#view');
     var targetBox = target.getBoundingClientRect();
     var viewBox = view.getBoundingClientRect();
-    if (targetBox.bottom > viewBox.bottom) view.scrollTop += targetBox.bottom - viewBox.bottom + 12;
+    var viewBottom = viewBox.bottom - parseFloat(getComputedStyle(view).scrollPaddingBottom);
+    if (targetBox.bottom > viewBottom) view.scrollTop += targetBox.bottom - viewBottom + 12;
     if (targetBox.top < viewBox.top) view.scrollTop += targetBox.top - viewBox.top - 12;
   }
 

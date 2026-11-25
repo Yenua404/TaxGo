@@ -47,6 +47,7 @@
   --radius-feature: 16px;
   --control: 48px;
   --tab-height: 66px;
+  --tab-notch-depth: 42px;
   --touch: 44px;
   --layout-width: 448px;
   --sheet-width: 470px;
@@ -665,7 +666,7 @@ html[data-theme="dark"] .mascot-open .ic { color: #111; }
 /* The header and navigation never stretch when content or reminder visibility changes. */
 .app { display:flex; flex-direction:column; height:100vh; height:100dvh; min-height:0; overflow:hidden; }
 .app > .top, .app > .previewbar, .app > .tabs { flex:0 0 auto; }
-.app > .view { flex:1 1 0%; min-height:0; min-width:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; }
+.app > .view { flex:1 1 0%; min-height:0; min-width:0; isolation:isolate; overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; scroll-padding-bottom:var(--tab-notch-depth); }
 .app > .tabs { grid-template-rows:61px; height:calc(72px + env(safe-area-inset-bottom,0px)); align-content:start; flex-shrink:0; }
 .app > .tabs .tab { min-height:0; height:61px; }
 @media (min-width:800px) and (min-height:600px) { .app { height:calc(100dvh - 36px); } }
@@ -761,12 +762,17 @@ button, input, select, textarea { font-family: inherit; }
 .receipt-line-refund strong { color: #775f00; font-size: 17px; line-height: 1.2; font-weight: 900; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .receipt-line-refund.is-ineligible strong { color: var(--ink-soft); }
 html[data-theme="dark"] .receipt-line-refund:not(.is-ineligible) strong { color: #eed56a; }
-/* The surface starts at the tab row. Only the departure icon extends into the view. */
-.app > .tabs { position: relative; isolation: isolate; background: var(--paper); border: 0; box-shadow: inset 0 1.5px var(--panel-border); height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px)); min-height: var(--tab-height); grid-template-rows: var(--tab-height); padding: 0 5px env(safe-area-inset-bottom, 0px); overflow: visible; align-content: start; }
-.app > .tabs > .tab { height: 64px; min-height: 0; gap: 5px; padding: 4px 1px; min-width: 0; line-height: 1.2; text-align: center; }
+/* The view extends through the transparent notch. Scroll clearance keeps content above the bar. */
+.view { padding-bottom: calc(32px + var(--tab-notch-depth) + env(safe-area-inset-bottom, 0px)); }
+.app > .tabs { position: relative; isolation: isolate; margin-top: calc(-1 * var(--tab-notch-depth)); background: transparent; border: 0; box-shadow: none; height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px)); min-height: var(--tab-height); grid-template-rows: var(--tab-height); padding: 0 5px env(safe-area-inset-bottom, 0px); overflow: visible; align-content: start; pointer-events: none; }
+.nav-surface { position: absolute; inset: 0 0 auto; z-index: -1; width: 100%; height: var(--tab-height); overflow: visible; fill: var(--paper); }
+.nav-edge { fill: none; stroke: var(--panel-border); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.app > .tabs::after { content: ''; position: absolute; inset: var(--tab-height) 0 0; z-index: -1; background: var(--paper); }
+.app > .tabs > .tab { height: 64px; min-height: 0; gap: 5px; padding: 4px 1px; min-width: 0; line-height: 1.2; text-align: center; pointer-events: auto; }
 .app > .tabs > .tab > span { font-size: 11px; font-weight: 750; overflow-wrap: anywhere; }
 .app > .tabs > .tab:not(.tab-departure) .ic { width: 24px; height: 24px; padding: 3px; border-radius: 6px; }
-.app > .tabs > .tab.tab-departure { padding: 1px 0 0; justify-content: flex-start; gap: 9px; }
+.app > .tabs > .tab.tab-departure { padding: 1px 0 0; justify-content: flex-start; gap: 9px; pointer-events: none; }
+.tab-departure > .ic, .tab-departure > span { pointer-events: auto; }
 .app > .tabs > .tab.tab-departure .ic { flex: none; width: 28px; height: 28px; margin-top: -20px; padding: 10px; box-sizing: content-box; border: 2px solid #161b24; border-radius: 50%; background: var(--sign); color: #161b24; box-shadow: 0 3px 0 #161b24; stroke-width: 2.5; }
 .app > .tabs > .tab.tab-departure[aria-current="page"] .ic { background: #161b24; color: var(--sign); border-color: var(--sign); box-shadow: 0 3px 0 #161b24; }
 .app > .tabs > .tab.tab-departure > span { margin-top: 2px; }
@@ -918,7 +924,7 @@ html[data-theme="dark"] .receipt-gauge > strong:not(.receipt-gauge-total) { colo
   margin-top: auto;
   padding-right: 2px;
 }
-#view:has(> .wallet-stack) { padding-bottom: 0; }
+#view:has(> .wallet-stack) { padding-bottom: var(--tab-notch-depth); }
 .wallet-stack-card {
   position: relative;
   background: var(--paper);
@@ -1160,7 +1166,7 @@ html[data-theme="dark"] .previewbar button { color: #22242a; }
   position: relative;
   isolation: isolate;
   min-height: 100%;
-  padding: 6px var(--gutter) 23px;
+  padding: 6px var(--gutter) calc(23px + var(--tab-notch-depth));
   overflow: hidden;
   color: var(--quiz-ink);
   background: linear-gradient(#fff7d8 0 118px, #fcf9ef 250px);

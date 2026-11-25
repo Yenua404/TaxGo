@@ -2370,11 +2370,58 @@
   });
 
   /* ---------- 시작 ---------- */
+  function startupFlight(mark, duration) {
+    // A single tilted ellipse keeps the front and back halves symmetric.
+    var majorX = -1.415;
+    var majorY = .42;
+    var minorScale = .21;
+    var frames = Array.from({ length: 65 }, function (_, index) {
+      var progress = index / 64;
+      if (progress > .8) {
+        var settle = (progress - .8) / .2;
+        progress += .2 * settle * settle * (1 - settle);
+      }
+      var angle = progress * 2 * Math.PI;
+      var along = 1 - Math.cos(angle);
+      var across = Math.sin(angle) * minorScale;
+      var x = majorX * along + majorY * across;
+      var y = majorY * along - majorX * across;
+      return { transform: 'translate(' + x + 'em, ' + y + 'em) rotate(18deg)' };
+    });
+    mark.animate(frames, { duration: duration, fill: 'both' });
+  }
+
+  function playStartup() {
+    var splash = $('#startup-splash');
+    if (splash.hidden || !canAnimate(splash)) {
+      splash.hidden = true;
+      animateMenuEntry();
+      return;
+    }
+    var app = $('#app');
+    var timeout;
+    function finish(event) {
+      if (event && (event.target !== splash || event.animationName !== 'startup-reveal')) return;
+      window.clearTimeout(timeout);
+      splash.removeEventListener('animationend', finish);
+      splash.hidden = true;
+      app.inert = false;
+      animateMenuEntry();
+    }
+    var flightDuration = 1460;
+    app.inert = true;
+    splash.addEventListener('animationend', finish);
+    timeout = window.setTimeout(finish, 2600);
+    splash.style.setProperty('--startup-flight-duration', flightDuration + 'ms');
+    splash.classList.add('is-playing');
+    startupFlight(splash.querySelector('.startup-mark'), flightDuration);
+  }
+
   $('#r-method').innerHTML = D.methods.map(function (x) { return '<option value="' + x.id + '">' + esc(x.label) + '</option>'; }).join('');
   $('#t-airport').innerHTML = airportSelectHTML(state.trip.airport);
   ui.tab = tabFromHash() || 'home';
   render();
-  animateMenuEntry();
+  playStartup();
 
   /* 자정이나 출발 시각에 시점별 안내를 갱신합니다. */
   function refreshPhase() {

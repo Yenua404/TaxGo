@@ -1022,7 +1022,6 @@ html[data-theme="dark"] .pick-scene { filter: brightness(.81) saturate(.88); }
 .pick-source a { color: #ffe600; }
 .pick-community { padding: 3px 0 2px; color: #fff9e6; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .pick-community strong, .pick-community a { color: #fff0a0; }
-.pick-community a { color: #fff0a0; }
 .pick-reroll { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 7px; align-items: center; font-size: 11px; }
 .pick-reroll .iconbtn { background: transparent; color: #ffe600; border: 0; box-shadow: none; }
 @media (prefers-reduced-motion: no-preference) {
@@ -1039,6 +1038,39 @@ html[data-theme="dark"] .pick-scene { filter: brightness(.81) saturate(.88); }
 @keyframes pick-float { 50% { transform: translateY(-5px); } }
 @keyframes pick-progress { from { transform: scaleX(.12); } to { transform: scaleX(1); } }
 @keyframes pick-pop { from { transform: scale(.72); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Dark surfaces for cards and larger reading areas. Keep image pixels legible. */
+html[data-theme="dark"] { --sign: #e8cf72; --sign-hover: #f0da8b; }
+html[data-theme="dark"] .wallet-stack > .wallet-stack-card:not(.wallet-qr) {
+  --ink: #e1e7ef;
+  --ink-soft: #b2bed0;
+  --paper: #26364a;
+  --tint: #34465c;
+  --line: #4d6179;
+  --panel-border: #65778d;
+  --sign: #dec779;
+}
+html[data-theme="dark"] .wallet-stack > .wallet-stack-card:not(.wallet-qr):is(.is-lifting, :has(> h2 > button:active)) {
+  color: #21252b;
+}
+html[data-theme="dark"] .wallet-stack .wallet-passport[open] > .wallet-service,
+html[data-theme="dark"] .wallet-stack .wallet-passport > .wallet-service:active { color: #21252b; }
+html[data-theme="dark"] #view .speech-bubble,
+html[data-theme="dark"] .pick-speech {
+  color: #e4e9f1;
+  background: #2a3a50;
+  border-color: #687a91;
+}
+html[data-theme="dark"] #view .speech-bubble::before,
+html[data-theme="dark"] .pick-speech::before { background: #2a3a50; border-color: #687a91; }
+html[data-theme="dark"] .clear-stage { background: #394652; color: #e4e9f1; }
+html[data-theme="dark"] .previewbar { background: #d8c477; }
+html[data-theme="dark"] .previewbar button { color: #22242a; }
+
+#view :is(.page-title, .sec-title, .slip-msg, .slip-count), dialog :is(.sheet-title, .calc, .form-msg) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 
 /* Wallet O/X game */
 .wallet-quiz-service h2 { font-size: 17px; line-height: 1.25; }

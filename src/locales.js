@@ -1,5 +1,30 @@
 /* Presentation-only translations; original tax rules and data.js remain unchanged. */
 window.TAXGO_I18N = {
+  "10% 일반": ["10%（標準税率）", "10% standard rate"],
+  "8% 식품·음료": ["8%（食品・飲料）", "8% food and drinks"],
+  "여행 요약": ["旅程の概要", "Trip summary"],
+  "이전 달": ["前の月", "Previous month"],
+  "다음 달": ["次の月", "Next month"],
+  "절차 단계": ["手続きの流れ", "Process steps"],
+  "신용카드": ["クレジットカード", "Credit card"],
+  "먹었거나 써서 없음:": ["開封・使用・消費した品物：", "Used or consumed: "],
+  "소비": ["使用・消費済み", "Used"],
+  "금액은 세금 포함, 엔": ["税込・円", "Tax included, in yen"],
+  "먹었거나 없는 물건이 있어서 이 영수증은 통째로 환급이 안 됩니다. 공항에서는 키오스크 대신 세관 직원에게 먼저 말하세요.": ["消費した品物や持ち出せない品物があるため、この取引は還付対象外です。空港では先に税関職員に申し出てください。", "This transaction is ineligible because an item was consumed or is missing. Speak to a customs officer first."],
+  "드럭스토어 텐진점": ["ドラッグストア天神店", "Tenjin drugstore"],
+  "디스카운트숍 나카스점": ["ディスカウントショップ中洲店", "Nakasu discount store"],
+  "가전양판점 하카타역점": ["家電量販店 博多駅店", "Hakata Station electronics store"],
+  "말차 초콜릿 4개 묶음": ["抹茶チョコ4個セット", "Matcha chocolate, pack of 4"],
+  "과자 버라이어티 팩": ["お菓子の詰め合わせ", "Assorted snacks"],
+  "컵라면 6개 세트": ["カップ麺6個セット", "Cup noodles, pack of 6"],
+  "곤약 젤리 3봉": ["こんにゃくゼリー3袋", "Konjac jelly, 3 bags"],
+  "드립 커피 세트": ["ドリップコーヒーセット", "Drip coffee set"],
+  "녹차 티백": ["緑茶ティーバッグ", "Green tea bags"],
+  "매장 이름을 넣어 주세요.": ["店舗名を入力してください。", "Enter the store name."],
+  "구매일을 골라 주세요.": ["購入日を選んでください。", "Select the purchase date."],
+  "구매일이 오늘보다 뒤입니다. 날짜를 확인해 주세요.": ["今日より後の日付は購入日に設定できません。", "The purchase date cannot be in the future."],
+  "출국일을 골라 주세요.": ["日本からの出国日を選んでください。", "Select your departure date."],
+  "출발 시각을 넣어 주세요.": ["出発時刻を入力してください。", "Enter your departure time."],
   "홈": [
     "ホーム",
     "Home"
@@ -109,8 +134,8 @@ window.TAXGO_I18N = {
     "Refund progress"
   ],
   "시점 미리보기": [
-    "時点プレビュー",
-    "Time preview"
+    "プレビュー",
+    "Trip preview"
   ],
   "지금": [
     "現在",
@@ -122,7 +147,7 @@ window.TAXGO_I18N = {
   ],
   "전날": [
     "前日",
-    "Day before"
+    "Day before departure"
   ],
   "당일": [
     "当日",

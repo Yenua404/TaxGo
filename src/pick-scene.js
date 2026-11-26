@@ -1,5 +1,5 @@
 /* Original pixel streetscape inspired by the reference images' dusk palette. */
-window.TAXGO_PICK_SCENE = `<svg class="pick-scene" viewBox="0 0 360 620" preserveAspectRatio="none" aria-hidden="true" shape-rendering="crispEdges">
+window.TAXGO_PICK_SCENE = `<svg class="pick-scene" viewBox="0 0 360 620" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges">
   <defs>
     <linearGradient id="pick-sky" x2="0" y2="1">
       <stop stop-color="#471b6a"/><stop offset=".59" stop-color="#77439e"/><stop offset="1" stop-color="#b873bb"/>

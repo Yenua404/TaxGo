@@ -581,10 +581,8 @@
     }
     var p = draft.plan;
     var a = airportOf(state.trip.airport);
-    $('#arrival-content').innerHTML = '<div class="arrival-result"><span>' +
-      tr('권장 도착 시간', '推奨到着時刻', 'Recommended arrival') + '</span><strong>' + hm(p.at) + '</strong><span>' +
-      esc(mdw(L.toISO(p.at))) + ' · ' + tr('출발 ' + span(p.leadMin) + ' 전', '出発' + span(p.leadMin) + '前', span(p.leadMin) + ' before departure') +
-      '</span></div>' + planNotes(p, a) +
+    $('#arrival-content').innerHTML = '<div class="arrival-result">' +
+      arrivalTimes(p, a, tr('권장 도착 시간', '推奨到着時刻', 'Recommended arrival')) + '</div>' + planNotes(p, a) +
       '<button type="button" class="btn btn-sign btn-block" data-act="arrivalApply" data-key="arrival-apply">' +
       (applied ? tr('권장 시간으로 갱신', '推奨時刻に更新', 'Update to recommended time') :
         tr('이 권장 시간 사용', 'この推奨時刻を使用', 'Use recommended time')) + '</button>' + cancel;
@@ -858,8 +856,9 @@
         var on = pref.enabled && ui.reminderPrefs.enabled;
         var effective = R.apply([raw], {entries:{[raw.id]:Object.assign({}, pref, {enabled:true})}}, c.now)[0];
         var item = reminderLabel(effective);
+        var date = L.toISO(item.at);
         return '<article class="reminder-card' + (!pref.enabled || !ui.reminderPrefs.enabled ? ' is-disabled' : '') + '">' +
-          '<div class="reminder-date-block"><span>' + tr('알림 날짜', '通知日', 'REMINDER DATE') + '</span><strong>' + esc(ymd(L.toISO(item.at))) + '</strong></div>' +
+          '<time class="reminder-date" datetime="' + date + '">' + esc(ymd(date)) + '</time>' +
           '<div class="reminder-card-body"><h3>' + nb(item.title) + '</h3><span class="reminder-mode">' + repeatText(item.mode) +
           (item.untilISO ? ' · ' + tr(ymd(item.untilISO) + '까지', ymd(item.untilISO) + 'まで', 'until ' + ymd(item.untilISO)) : '') + '</span></div>' +
           '<div class="reminder-card-actions"><label class="notification-switch reminder-item-toggle"><input type="checkbox" role="switch" data-change="remItem" data-key="rem-toggle-' + raw.id + '" data-arg="' + raw.id + '"' + (on ? ' checked' : '') + (ui.reminderPrefs.enabled ? '' : ' disabled') + ' aria-label="' + tr('개별 알림 사용', '個別通知の有効化', 'Enable this reminder') + '"><span class="switch-track"></span><strong>' + (on ? 'ON' : 'OFF') + '</strong></label>' +
@@ -901,6 +900,16 @@
     return '<div class="time ' + cls + '"><span class="time-label">' + label + '</span>' +
       '<span class="time-num disp">' + hm(d) + '</span>' +
       '<span class="time-date">' + esc(mdw(L.toISO(d))) + (extra || '') + '</span></div>';
+  }
+
+  function arrivalTimes(plan, airport, goalLabel) {
+    var lead = span(plan.leadMin);
+    var departureLabel = airport.ship ? tr('배 출발', '船の出発', 'Ferry departs') : tr('비행기 출발', '飛行機の出発', 'Flight departs');
+    return '<div class="times">' +
+      timeBlock('is-goal', goalLabel, plan.at, '<span class="sr">, ' +
+        tr('출발 ' + lead + ' 전', '出発' + lead + '前', lead + ' before departure') + '</span>') +
+      '<div class="time-gap" aria-hidden="true"><span>' + lead + '</span><i></i></div>' +
+      timeBlock('is-dep', departureLabel, plan.dep, '') + '</div>';
   }
 
   /* 공항 도착 목표에 대한 근거. 계산은 기존 logic.js 값을 그대로 이용합니다. */
@@ -1012,11 +1021,7 @@
       h.push('<div class="panel"><p>' + tr('출국일과 출발 시각을 입력하면 공항 도착 목표를 계산합니다.', '出国日と出発時刻から空港到着目標を計算します。', 'Set a departure date and time to calculate your arrival target.') + '</p></div>');
     } else {
       h.push('<div class="panel arrival-panel">' +
-        '<div class="times">' +
-        timeBlock('is-goal', '<span class="chip chip-sign">' + tr('공항 도착 목표', '空港到着目標', 'Arrival target') + '</span>', p.at, '<span class="sr">, ' + span(p.leadMin) + '</span>') +
-        '<div class="time-gap" aria-hidden="true"><span>' + span(p.leadMin) + '</span><i></i></div>' +
-        timeBlock('is-dep', a.ship ? tr('배 출발', '船の出発', 'Ferry departs') : tr('비행기 출발', '飛行機の出発', 'Flight departs'), p.dep, '') +
-        '</div>' +
+        arrivalTimes(p, a, '<span class="chip chip-sign">' + tr('공항 도착 목표', '空港到着目標', 'Arrival target') + '</span>') +
         (c.trip.lead && c.trip.arrivalReviewed ? '<p class="arrival-applied">' + icon('check', 17) +
           tr('계산한 권장 시간을 사용 중입니다.', '計算した推奨時刻を使用しています。', 'Using your calculated recommendation.') + '</p>' : '') +
         planNotes(p, a) + '</div>');

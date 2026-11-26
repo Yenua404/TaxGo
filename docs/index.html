@@ -1081,16 +1081,14 @@ dialog { border: 1.8px solid var(--panel-border); border-bottom: 0; border-radiu
 .notification-switch input:checked + .switch-track::before { transform: translateX(22px); background: #151515; border-color: #151515; }
 .notification-switch input:focus-visible + .switch-track { outline: 3px solid var(--sign); outline-offset: 2px; }
 .reminder-list { display: flex; flex-direction: column; gap: 13px; }
-.reminder-card { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 10px; padding: 14px; border-radius: 13px; border: 1.6px solid var(--panel-border); background: var(--paper); box-shadow: var(--shadow-card); }
-.reminder-card.is-disabled { opacity: .56; }
-.reminder-date-block { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; grid-column: 1 / -1; }
-.reminder-date-block span { font-size: 10px; font-weight: 800; color: var(--ink-soft); }
-.reminder-date-block strong { display: inline-flex; align-items: center; padding: 6px 10px; background: var(--sign); color: #111; border: 1.5px solid #111; border-radius: 7px; font-size: 19px; font-weight: 950; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-.reminder-card-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.reminder-card { display: grid; grid-template: "date actions" auto "body actions" auto / minmax(0, 1fr) auto; align-items: center; gap: 3px 10px; padding: 10px 12px; border-radius: 13px; border: 1.6px solid var(--panel-border); background: var(--paper); box-shadow: var(--shadow-card); }
+.reminder-date { grid-area: date; color: #675300; font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.2; }
+html[data-theme="dark"] .reminder-date { color: #e5ce61; }
+.reminder-card-body { grid-area: body; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .reminder-card-body h3 { font-size: 13.5px; font-weight: 900; line-height: 1.37; }
-.reminder-mode { align-self: flex-start; display: inline-block; padding: 4px 8px; border: 1px dashed var(--line); background: var(--tint); border-radius: 7px; font-weight: 800; font-size: 11px; color: var(--ink-soft); }
-.reminder-card-actions { display: flex; flex-direction: row; gap: 7px; align-items: center; }
-.reminder-edit { width: 43px; height: 43px; flex: none; display: inline-grid; place-items: center; padding: 0; background: var(--paper); color: var(--ink); border: 1.5px solid var(--panel-border); border-radius: 9px; }
+.reminder-mode { align-self: flex-start; display: inline-block; padding: 2px 6px; border: 1px dashed var(--line); background: var(--tint); border-radius: 7px; font-weight: 800; font-size: 11px; color: var(--ink-soft); }
+.reminder-card-actions { grid-area: actions; display: flex; gap: 4px; align-items: center; }
+.reminder-edit { width: 44px; height: 44px; flex: none; display: inline-grid; place-items: center; padding: 0; background: transparent; color: var(--ink); border: 0; border-radius: 9px; }
 .reminder-item-toggle input { width: 20px; height: 20px; accent-color: #e6ce00; cursor: pointer; }
 .reminder-item-toggle { min-height: 43px; display: flex; align-items: center; justify-content: center; }
 .reminder-footnote { font-size: 11.5px; border-left: 3px solid var(--sign); padding-left: 9px; }
@@ -1167,7 +1165,6 @@ html[data-theme="dark"] .mascot-open .ic { color: #111; }
   .trip-actions { gap: 4px; }
   .trip-dday { font-size: 13px; padding: 6px; }
   .trip-overview-main .trip-more { width: 35px; height: 35px; min-width: 35px; min-height: 35px; }
-  .reminder-date-block strong { font-size: 17px; }
   .checklist-launch-copy h2 { font-size: 16px; }
 }
 
@@ -1195,10 +1192,7 @@ html[data-theme="dark"] .mascot-open .ic { color: #111; }
 /* Current phase has a distinctive pixel-center dot; earlier phases carry checks. */
 /* Calendar: date typography instead of a boxed badge, real on/off slider per item. */
 #reminder-settings { scroll-margin-top:12px; outline:none; }
-.reminder-date-block strong { padding:0; border:0; border-radius:0; background:transparent; color:#675300; font-size:23px; font-weight:950; line-height:1.2; letter-spacing:.01em; }
-html[data-theme="dark"] .reminder-date-block strong { color:#e5ce61; }
-.reminder-card.is-disabled { opacity:1; }
-.reminder-card.is-disabled .reminder-card-body, .reminder-card.is-disabled .reminder-date-block { opacity:.58; }
+.reminder-card.is-disabled :is(.reminder-card-body, .reminder-date) { opacity:.58; }
 .reminder-item-toggle { display:flex; flex-direction:column; align-items:center; min-height:44px; min-width:47px; }
 .reminder-item-toggle input { appearance:none; position:absolute; width:1px; height:1px; opacity:0; }
 .reminder-item-toggle .switch-track { width:45px; height:26px; }
@@ -1234,7 +1228,6 @@ html[data-theme="dark"] .mk-memo { background:#67c2bd; border-color:#67c2bd; }
 @keyframes mascot-jump { 0%,100% { transform:translateY(0) rotate(0); } 35% { transform:translateY(-15px) rotate(-8deg); } 60% { transform:translateY(-4px) rotate(8deg); } }
 @keyframes clear-confetti { 0% { transform:translate(0,0) scale(.4); opacity:0; } 15% { opacity:1; } 72% { opacity:1; } 100% { transform:translate(var(--dx),var(--dy)) rotate(var(--r)); opacity:0; } }
 @media(prefers-reduced-motion:reduce) { .clear-stage, .clear-mascot, #clear-particles i { animation:none; } #clear-particles { display:none; } }
-@media(max-width:350px) { .reminder-date-block strong { font-size:20px; } }
 /* overflow:hidden still allows programmatic/focus scrolling of the outer shell.
    clip makes the shell non-scrollable, and keeps all focusable controls inside the main scroll area. */
 .app { overflow:clip; }
@@ -1318,7 +1311,7 @@ html[lang="ko"] :is(.page-title, .welcome h1) { font-family: "Black Han Sans", v
 html[lang="ko"] :is(.sec-title, .sheet-title, .wallet-stack h2, .reminder-card-body h3, .checklist-launch-copy h2, .departure-picker label, .arrival-review-list legend, .step-name, .kiosk-ko, .note-title) { font-weight: 650; }
 html[lang="ko"] .quick-tile > span { font-weight: 700; }
 html[lang="ko"] :is(.receipt-filters button, .speech-bubble, .receipt-status, .wallet-edit, .wallet-qr-link, .wallet-qr-art span) { font-weight: 650; }
-html[lang="ko"] :is(.trip-destination strong, .trip-refund strong, .receipt-line-main strong, .receipt-line-amount strong, .receipt-line-refund strong, .reminder-date-block strong, .calendar-deadline .money, .time-num) { font-weight: 700; }
+html[lang="ko"] :is(.trip-destination strong, .trip-refund strong, .receipt-line-main strong, .receipt-line-amount strong, .receipt-line-refund strong, .reminder-date, .calendar-deadline .money, .time-num) { font-weight: 700; }
 html[lang="ko"] .welcome p { font-weight: 500; }
 html[lang="ko"] .welcome-copy :is(h1, p) { word-break: keep-all; }
 html[lang="ko"] .welcome-copy h1 { text-wrap: balance; }
@@ -1426,10 +1419,13 @@ html[data-theme="dark"] .receipt-gauge > strong:not(.receipt-gauge-total) { colo
 .arrival-review-line { display: grid; grid-template-columns: 19px minmax(0, 1fr) auto; align-items: center; gap: 7px; min-height: 43px; padding: 4px 0; font-size: 13px; overflow-wrap: anywhere; }
 .arrival-review-line + .arrival-review-line { border-top: 1px dashed var(--line); }
 .arrival-review-line input { width: 18px; height: 18px; accent-color: #c7a100; }
-.arrival-result { display: grid; gap: 4px; padding: 12px 14px; color: #16191d; background: var(--sign); border: 2px solid #16191d; border-radius: 8px; box-shadow: 3px 3px 0 #16191d; }
-.arrival-result strong { font-size: 38px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.arrival-result { --ink: #362b17; --ink-soft: #584622; padding: 14px 12px; color: var(--ink); background: #fff4bd; border: 2px solid #9a7940; border-radius: 8px; box-shadow: 3px 3px 0 #9a7940; }
+.arrival-result .times { grid-template-columns: minmax(0, 1fr) minmax(40px, .65fr) minmax(0, 1fr); gap: 8px; }
+.arrival-result .time-num { font-size: clamp(28px, 8vw, 38px); }
+.arrival-result .time.is-dep .time-num { font-size: clamp(22px, 6.5vw, 28px); }
+.arrival-result .time-gap { color: var(--ink-soft); font-size: 11px; }
+html[data-theme="dark"] .arrival-result { --ink: #fff2cb; --ink-soft: #eedca5; background: #44391f; border-color: #977c48; box-shadow: 3px 3px 0 #141722; }
 
-.reminder-edit { background: transparent; border: 0; }
 .notification-switch:has(input:disabled) { cursor: default; }
 .calendar-deadline { gap: 8px; padding: 2px 0; margin-bottom: 20px; }
 .calendar-deadline .money { font-size: clamp(30px, 9vw, 36px); line-height: 1.2; font-weight: 800; font-variant-numeric: tabular-nums; }
@@ -4123,7 +4119,7 @@ window.TAXGO_PICKS = {
 </script>
 <script>
 /* Original pixel streetscape inspired by the reference images' dusk palette. */
-window.TAXGO_PICK_SCENE = `<svg class="pick-scene" viewBox="0 0 360 620" preserveAspectRatio="none" aria-hidden="true" shape-rendering="crispEdges">
+window.TAXGO_PICK_SCENE = `<svg class="pick-scene" viewBox="0 0 360 620" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges">
   <defs>
     <linearGradient id="pick-sky" x2="0" y2="1">
       <stop stop-color="#471b6a"/><stop offset=".59" stop-color="#77439e"/><stop offset="1" stop-color="#b873bb"/>
@@ -5009,10 +5005,8 @@ window.TAXGO_QUIZ = (function () {
     }
     var p = draft.plan;
     var a = airportOf(state.trip.airport);
-    $('#arrival-content').innerHTML = '<div class="arrival-result"><span>' +
-      tr('권장 도착 시간', '推奨到着時刻', 'Recommended arrival') + '</span><strong>' + hm(p.at) + '</strong><span>' +
-      esc(mdw(L.toISO(p.at))) + ' · ' + tr('출발 ' + span(p.leadMin) + ' 전', '出発' + span(p.leadMin) + '前', span(p.leadMin) + ' before departure') +
-      '</span></div>' + planNotes(p, a) +
+    $('#arrival-content').innerHTML = '<div class="arrival-result">' +
+      arrivalTimes(p, a, tr('권장 도착 시간', '推奨到着時刻', 'Recommended arrival')) + '</div>' + planNotes(p, a) +
       '<button type="button" class="btn btn-sign btn-block" data-act="arrivalApply" data-key="arrival-apply">' +
       (applied ? tr('권장 시간으로 갱신', '推奨時刻に更新', 'Update to recommended time') :
         tr('이 권장 시간 사용', 'この推奨時刻を使用', 'Use recommended time')) + '</button>' + cancel;
@@ -5286,8 +5280,9 @@ window.TAXGO_QUIZ = (function () {
         var on = pref.enabled && ui.reminderPrefs.enabled;
         var effective = R.apply([raw], {entries:{[raw.id]:Object.assign({}, pref, {enabled:true})}}, c.now)[0];
         var item = reminderLabel(effective);
+        var date = L.toISO(item.at);
         return '<article class="reminder-card' + (!pref.enabled || !ui.reminderPrefs.enabled ? ' is-disabled' : '') + '">' +
-          '<div class="reminder-date-block"><span>' + tr('알림 날짜', '通知日', 'REMINDER DATE') + '</span><strong>' + esc(ymd(L.toISO(item.at))) + '</strong></div>' +
+          '<time class="reminder-date" datetime="' + date + '">' + esc(ymd(date)) + '</time>' +
           '<div class="reminder-card-body"><h3>' + nb(item.title) + '</h3><span class="reminder-mode">' + repeatText(item.mode) +
           (item.untilISO ? ' · ' + tr(ymd(item.untilISO) + '까지', ymd(item.untilISO) + 'まで', 'until ' + ymd(item.untilISO)) : '') + '</span></div>' +
           '<div class="reminder-card-actions"><label class="notification-switch reminder-item-toggle"><input type="checkbox" role="switch" data-change="remItem" data-key="rem-toggle-' + raw.id + '" data-arg="' + raw.id + '"' + (on ? ' checked' : '') + (ui.reminderPrefs.enabled ? '' : ' disabled') + ' aria-label="' + tr('개별 알림 사용', '個別通知の有効化', 'Enable this reminder') + '"><span class="switch-track"></span><strong>' + (on ? 'ON' : 'OFF') + '</strong></label>' +
@@ -5329,6 +5324,16 @@ window.TAXGO_QUIZ = (function () {
     return '<div class="time ' + cls + '"><span class="time-label">' + label + '</span>' +
       '<span class="time-num disp">' + hm(d) + '</span>' +
       '<span class="time-date">' + esc(mdw(L.toISO(d))) + (extra || '') + '</span></div>';
+  }
+
+  function arrivalTimes(plan, airport, goalLabel) {
+    var lead = span(plan.leadMin);
+    var departureLabel = airport.ship ? tr('배 출발', '船の出発', 'Ferry departs') : tr('비행기 출발', '飛行機の出発', 'Flight departs');
+    return '<div class="times">' +
+      timeBlock('is-goal', goalLabel, plan.at, '<span class="sr">, ' +
+        tr('출발 ' + lead + ' 전', '出発' + lead + '前', lead + ' before departure') + '</span>') +
+      '<div class="time-gap" aria-hidden="true"><span>' + lead + '</span><i></i></div>' +
+      timeBlock('is-dep', departureLabel, plan.dep, '') + '</div>';
   }
 
   /* 공항 도착 목표에 대한 근거. 계산은 기존 logic.js 값을 그대로 이용합니다. */
@@ -5440,11 +5445,7 @@ window.TAXGO_QUIZ = (function () {
       h.push('<div class="panel"><p>' + tr('출국일과 출발 시각을 입력하면 공항 도착 목표를 계산합니다.', '出国日と出発時刻から空港到着目標を計算します。', 'Set a departure date and time to calculate your arrival target.') + '</p></div>');
     } else {
       h.push('<div class="panel arrival-panel">' +
-        '<div class="times">' +
-        timeBlock('is-goal', '<span class="chip chip-sign">' + tr('공항 도착 목표', '空港到着目標', 'Arrival target') + '</span>', p.at, '<span class="sr">, ' + span(p.leadMin) + '</span>') +
-        '<div class="time-gap" aria-hidden="true"><span>' + span(p.leadMin) + '</span><i></i></div>' +
-        timeBlock('is-dep', a.ship ? tr('배 출발', '船の出発', 'Ferry departs') : tr('비행기 출발', '飛行機の出発', 'Flight departs'), p.dep, '') +
-        '</div>' +
+        arrivalTimes(p, a, '<span class="chip chip-sign">' + tr('공항 도착 목표', '空港到着目標', 'Arrival target') + '</span>') +
         (c.trip.lead && c.trip.arrivalReviewed ? '<p class="arrival-applied">' + icon('check', 17) +
           tr('계산한 권장 시간을 사용 중입니다.', '計算した推奨時刻を使用しています。', 'Using your calculated recommendation.') + '</p>' : '') +
         planNotes(p, a) + '</div>');

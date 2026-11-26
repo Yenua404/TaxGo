@@ -564,16 +564,14 @@ dialog { border: 1.8px solid var(--panel-border); border-bottom: 0; border-radiu
 .notification-switch input:checked + .switch-track::before { transform: translateX(22px); background: #151515; border-color: #151515; }
 .notification-switch input:focus-visible + .switch-track { outline: 3px solid var(--sign); outline-offset: 2px; }
 .reminder-list { display: flex; flex-direction: column; gap: 13px; }
-.reminder-card { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 10px; padding: 14px; border-radius: 13px; border: 1.6px solid var(--panel-border); background: var(--paper); box-shadow: var(--shadow-card); }
-.reminder-card.is-disabled { opacity: .56; }
-.reminder-date-block { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; grid-column: 1 / -1; }
-.reminder-date-block span { font-size: 10px; font-weight: 800; color: var(--ink-soft); }
-.reminder-date-block strong { display: inline-flex; align-items: center; padding: 6px 10px; background: var(--sign); color: #111; border: 1.5px solid #111; border-radius: 7px; font-size: 19px; font-weight: 950; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-.reminder-card-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.reminder-card { display: grid; grid-template: "date actions" auto "body actions" auto / minmax(0, 1fr) auto; align-items: center; gap: 3px 10px; padding: 10px 12px; border-radius: 13px; border: 1.6px solid var(--panel-border); background: var(--paper); box-shadow: var(--shadow-card); }
+.reminder-date { grid-area: date; color: #675300; font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.2; }
+html[data-theme="dark"] .reminder-date { color: #e5ce61; }
+.reminder-card-body { grid-area: body; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .reminder-card-body h3 { font-size: 13.5px; font-weight: 900; line-height: 1.37; }
-.reminder-mode { align-self: flex-start; display: inline-block; padding: 4px 8px; border: 1px dashed var(--line); background: var(--tint); border-radius: 7px; font-weight: 800; font-size: 11px; color: var(--ink-soft); }
-.reminder-card-actions { display: flex; flex-direction: row; gap: 7px; align-items: center; }
-.reminder-edit { width: 43px; height: 43px; flex: none; display: inline-grid; place-items: center; padding: 0; background: var(--paper); color: var(--ink); border: 1.5px solid var(--panel-border); border-radius: 9px; }
+.reminder-mode { align-self: flex-start; display: inline-block; padding: 2px 6px; border: 1px dashed var(--line); background: var(--tint); border-radius: 7px; font-weight: 800; font-size: 11px; color: var(--ink-soft); }
+.reminder-card-actions { grid-area: actions; display: flex; gap: 4px; align-items: center; }
+.reminder-edit { width: 44px; height: 44px; flex: none; display: inline-grid; place-items: center; padding: 0; background: transparent; color: var(--ink); border: 0; border-radius: 9px; }
 .reminder-item-toggle input { width: 20px; height: 20px; accent-color: #e6ce00; cursor: pointer; }
 .reminder-item-toggle { min-height: 43px; display: flex; align-items: center; justify-content: center; }
 .reminder-footnote { font-size: 11.5px; border-left: 3px solid var(--sign); padding-left: 9px; }
@@ -650,7 +648,6 @@ html[data-theme="dark"] .mascot-open .ic { color: #111; }
   .trip-actions { gap: 4px; }
   .trip-dday { font-size: 13px; padding: 6px; }
   .trip-overview-main .trip-more { width: 35px; height: 35px; min-width: 35px; min-height: 35px; }
-  .reminder-date-block strong { font-size: 17px; }
   .checklist-launch-copy h2 { font-size: 16px; }
 }
 
@@ -678,10 +675,7 @@ html[data-theme="dark"] .mascot-open .ic { color: #111; }
 /* Current phase has a distinctive pixel-center dot; earlier phases carry checks. */
 /* Calendar: date typography instead of a boxed badge, real on/off slider per item. */
 #reminder-settings { scroll-margin-top:12px; outline:none; }
-.reminder-date-block strong { padding:0; border:0; border-radius:0; background:transparent; color:#675300; font-size:23px; font-weight:950; line-height:1.2; letter-spacing:.01em; }
-html[data-theme="dark"] .reminder-date-block strong { color:#e5ce61; }
-.reminder-card.is-disabled { opacity:1; }
-.reminder-card.is-disabled .reminder-card-body, .reminder-card.is-disabled .reminder-date-block { opacity:.58; }
+.reminder-card.is-disabled :is(.reminder-card-body, .reminder-date) { opacity:.58; }
 .reminder-item-toggle { display:flex; flex-direction:column; align-items:center; min-height:44px; min-width:47px; }
 .reminder-item-toggle input { appearance:none; position:absolute; width:1px; height:1px; opacity:0; }
 .reminder-item-toggle .switch-track { width:45px; height:26px; }
@@ -717,7 +711,6 @@ html[data-theme="dark"] .mk-memo { background:#67c2bd; border-color:#67c2bd; }
 @keyframes mascot-jump { 0%,100% { transform:translateY(0) rotate(0); } 35% { transform:translateY(-15px) rotate(-8deg); } 60% { transform:translateY(-4px) rotate(8deg); } }
 @keyframes clear-confetti { 0% { transform:translate(0,0) scale(.4); opacity:0; } 15% { opacity:1; } 72% { opacity:1; } 100% { transform:translate(var(--dx),var(--dy)) rotate(var(--r)); opacity:0; } }
 @media(prefers-reduced-motion:reduce) { .clear-stage, .clear-mascot, #clear-particles i { animation:none; } #clear-particles { display:none; } }
-@media(max-width:350px) { .reminder-date-block strong { font-size:20px; } }
 /* overflow:hidden still allows programmatic/focus scrolling of the outer shell.
    clip makes the shell non-scrollable, and keeps all focusable controls inside the main scroll area. */
 .app { overflow:clip; }
@@ -801,7 +794,7 @@ html[lang="ko"] :is(.page-title, .welcome h1) { font-family: "Black Han Sans", v
 html[lang="ko"] :is(.sec-title, .sheet-title, .wallet-stack h2, .reminder-card-body h3, .checklist-launch-copy h2, .departure-picker label, .arrival-review-list legend, .step-name, .kiosk-ko, .note-title) { font-weight: 650; }
 html[lang="ko"] .quick-tile > span { font-weight: 700; }
 html[lang="ko"] :is(.receipt-filters button, .speech-bubble, .receipt-status, .wallet-edit, .wallet-qr-link, .wallet-qr-art span) { font-weight: 650; }
-html[lang="ko"] :is(.trip-destination strong, .trip-refund strong, .receipt-line-main strong, .receipt-line-amount strong, .receipt-line-refund strong, .reminder-date-block strong, .calendar-deadline .money, .time-num) { font-weight: 700; }
+html[lang="ko"] :is(.trip-destination strong, .trip-refund strong, .receipt-line-main strong, .receipt-line-amount strong, .receipt-line-refund strong, .reminder-date, .calendar-deadline .money, .time-num) { font-weight: 700; }
 html[lang="ko"] .welcome p { font-weight: 500; }
 html[lang="ko"] .welcome-copy :is(h1, p) { word-break: keep-all; }
 html[lang="ko"] .welcome-copy h1 { text-wrap: balance; }
@@ -909,10 +902,13 @@ html[data-theme="dark"] .receipt-gauge > strong:not(.receipt-gauge-total) { colo
 .arrival-review-line { display: grid; grid-template-columns: 19px minmax(0, 1fr) auto; align-items: center; gap: 7px; min-height: 43px; padding: 4px 0; font-size: 13px; overflow-wrap: anywhere; }
 .arrival-review-line + .arrival-review-line { border-top: 1px dashed var(--line); }
 .arrival-review-line input { width: 18px; height: 18px; accent-color: #c7a100; }
-.arrival-result { display: grid; gap: 4px; padding: 12px 14px; color: #16191d; background: var(--sign); border: 2px solid #16191d; border-radius: 8px; box-shadow: 3px 3px 0 #16191d; }
-.arrival-result strong { font-size: 38px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.arrival-result { --ink: #362b17; --ink-soft: #584622; padding: 14px 12px; color: var(--ink); background: #fff4bd; border: 2px solid #9a7940; border-radius: 8px; box-shadow: 3px 3px 0 #9a7940; }
+.arrival-result .times { grid-template-columns: minmax(0, 1fr) minmax(40px, .65fr) minmax(0, 1fr); gap: 8px; }
+.arrival-result .time-num { font-size: clamp(28px, 8vw, 38px); }
+.arrival-result .time.is-dep .time-num { font-size: clamp(22px, 6.5vw, 28px); }
+.arrival-result .time-gap { color: var(--ink-soft); font-size: 11px; }
+html[data-theme="dark"] .arrival-result { --ink: #fff2cb; --ink-soft: #eedca5; background: #44391f; border-color: #977c48; box-shadow: 3px 3px 0 #141722; }
 
-.reminder-edit { background: transparent; border: 0; }
 .notification-switch:has(input:disabled) { cursor: default; }
 .calendar-deadline { gap: 8px; padding: 2px 0; margin-bottom: 20px; }
 .calendar-deadline .money { font-size: clamp(30px, 9vw, 36px); line-height: 1.2; font-weight: 800; font-variant-numeric: tabular-nums; }
